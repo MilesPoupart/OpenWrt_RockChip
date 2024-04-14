@@ -1,0 +1,497 @@
+#=================================================
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+# Lisence: MIT
+# Author: P3TERX
+# Blog: https://p3terx.com
+#=================================================
+
+name: build-compose_self
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      lede_source:
+        description: 'LEDE source'
+        required: true
+        default: coolsnowwolf/lede
+        type: choice
+        options:
+        - DHDAXCW/lede-rockchip
+        - MilesPoupart/lede-rockchip
+        - coolsnowwolf/lede
+        - MilesPoupart/lede
+      compile_device:
+        description: 'device'
+        required: true
+        default: r2s
+        type: choice
+        options:
+        - r2s
+        - r5c
+      kernel_version:
+          description: 'Linux kernel version'
+          required: true
+          default: '6.1'
+          type: choice
+          options:
+          - '6.6'
+          - '6.1'
+          - '5.15'
+          - '5.10'
+          - '5.4'
+      use_machine:
+        description: 'Machine'
+        required: true
+        default: '10700'
+        type: choice
+        options:
+        - 7700HQ
+        - '10700'
+      compile_version:
+        description: 'Version'
+        required: true
+        default: lite
+        type: choice
+        options:
+        - lite
+        - full
+      docker_contain:
+        description: 'Docker'
+        required: true
+        default: 'docker'
+        type: choice
+        options:
+          - 'docker'
+          - 'common'
+      task_setting:
+        description: 'Task Settings'
+        required: true
+        default : 'build-compose'
+        type: choice
+        options:
+        - 'build-compose'
+        - 'build-only'
+        - 'source-only'
+  # schedule:
+  #   - cron: 0 17 * * *
+  # watch:
+  #   types: started
+
+env:
+  REPO_URL: https://github.com/${{ inputs.lede_source }}
+  REPO_BRANCH: stable
+  CONFIG_FILE: configs/lean/${{ inputs.compile_device }}_${{ inputs.compile_version }}.config
+  DIY_SH: scripts/lean.sh
+  KMODS_IN_FIRMWARE: true
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  IMAGE: milespoupart/action-openwrt-cache:r2s_${{ inputs.compile_version }}
+  COMMIT_ID: ${{ vars.COMMIT_ID }}
+  KERNEL_VER: ${{ inputs.kernel_version }}
+
+jobs:
+
+  DownloadSourceCode:
+    runs-on: ubuntu-22.04
+    outputs:
+      OPENWRTROOT: ${{ steps.update.outputs.OPENWRTROOT }}
+
+    steps:
+    - name: Show choice
+      run: |
+        echo "Compile Version=${{ inputs.compile_version }}"
+        echo "Tsak settings=${{ inputs.task_setting }}"
+        echo "Compile machine=${{ inputs.use_machine }}"
+
+    - name: Checkout
+      if: inputs.task_setting != 'build-only'
+      uses: actions/checkout@v4
+
+    - name: Initialization Environment
+      if: inputs.task_setting != 'build-only'
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo "警告⚠"
+        echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+        echo -e "已知CPU型号（降序）：8370C，8272CL，8171M，E5-2673 \n"
+        echo "--------------------------CPU信息--------------------------"
+        echo "CPU物理数量：$(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
+        echo -e "CPU核心信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+        echo "--------------------------内存信息--------------------------"
+        echo "已安装内存详细信息："
+        echo -e "$(sudo lshw -short -C memory | grep GiB) \n"
+        echo "--------------------------硬盘信息--------------------------"
+        echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+        echo -e "Total CPU cores\t: $(nproc)"
+        cat /proc/cpuinfo | grep 'model name'
+        free -h
+        uname -a
+        [ -f /proc/version ] && cat /proc/version
+        [ -f /etc/issue.net ] && cat /etc/issue.net
+        [ -f /etc/issue ] && cat /etc/issue
+        ulimit -a
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install rdate zstd
+        # sudo -E apt-get -qq install $(curl -fsSL https://raw.githubusercontent.com/MilesPoupart/openwrt-list/master/depends-ubuntu-2204) tree
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        date
+        
+    - name: Login to Docker Hub
+      if: inputs.task_setting != 'build-only'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+        
+    - name: Clone Source Code
+      if: inputs.task_setting != 'build-only'
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL openwrt
+        # cd openwrt
+        
+    # - name: Reset Version
+    #   if: inputs.task_setting != 'build-only'
+    #   id: reset
+    #   run: |
+    #     cd openwrt
+    #     echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
+    #     echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
+    #     echo "COMMIT_ID version: $COMMIT_ID"
+    #     git reset --hard $COMMIT_ID
+    #     rm -rf .git
+
+    - name: Update Feeds
+      if: inputs.task_setting != 'build-only'
+      id: update
+      run: |
+        cd openwrt
+        echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
+        echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
+        mkdir customfeeds
+        git clone --depth=1 https://github.com/MilesPoupart/packages customfeeds/packages
+        git clone --depth=1 https://github.com/MilesPoupart/luci customfeeds/luci
+        chmod +x ../scripts/*.sh
+        ../scripts/hook-feeds.sh
+
+    - name: MOD index file
+      if: inputs.task_setting != 'build-only'
+      run: |
+         cd $OPENWRTROOT/package/lean/autocore/files/arm
+         sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/NanoPi-R2S"><%:固件下载%></a></td></tr>' index.htm
+
+    - name: Install Feeds
+      if: inputs.task_setting != 'build-only'
+      run: |
+        cd $OPENWRTROOT
+        cat feeds.conf.default
+        ./scripts/feeds install -a
+        
+    - name: Load Custom Configuration
+      if: inputs.task_setting != 'build-only'
+      run: |
+        [ -e files ] && mv files $OPENWRTROOT/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRTROOT/.config
+        chmod +x scripts/*.sh
+        cd $OPENWRTROOT
+        ../$DIY_SH
+        if [ "$KERNEL_VER" != "6.1" ]; then
+          sed -i "s/6.1/$KERNEL_VER/g" target/linux/rockchip/Makefile
+        fi
+        cat target/linux/rockchip/Makefile
+        ../scripts/preset-clash-core.sh arm64
+        ../scripts/preset-terminal-tools.sh
+        if [ ${{ inputs.docker_contain }} == "docker" ]; then
+            echo '
+        CONFIG_DOCKER_CGROUP_OPTIONS=y
+        CONFIG_DOCKER_NET_ENCRYPT=y
+        CONFIG_DOCKER_NET_MACVLAN=y
+        CONFIG_DOCKER_NET_OVERLAY=y
+        CONFIG_DOCKER_NET_TFTP=y
+        CONFIG_DOCKER_OPTIONAL_FEATURES=y
+        CONFIG_DOCKER_STO_BTRFS=y
+        CONFIG_DOCKER_STO_EXT4=y
+        CONFIG_PACKAGE_luci-app-dockerman=y
+        CONFIG_PACKAGE_luci-lib-docker=y' >> .config        
+        fi
+        make defconfig
+        
+    - name: Download Package
+      if: inputs.task_setting != 'build-only'
+      id: package
+      run: |
+        cd $OPENWRTROOT
+        # cat .config
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: Comporession
+      if: inputs.task_setting != 'build-only'
+      run: |
+        tar --zstd -cf openwrt.tar.zst ./openwrt
+
+    - name: Build and push
+      if: inputs.task_setting != 'build-only'
+      id: docker_build
+      uses: docker/build-push-action@v5
+      with:
+        context: ./
+        file: ./Dockerfile
+        push: true
+        tags: ${{ env.IMAGE }}
+        
+    - name: Image digest
+      if: inputs.task_setting != 'build-only'
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
+  CompileInitialize:
+    if: inputs.task_setting != 'source-only'
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
+    timeout-minutes: 1440
+    needs: [DownloadSourceCode]
+
+    outputs:
+      OPENWRTROOT: ${{ steps.clean.outputs.OPENWRTROOT }}
+
+    steps:
+
+    - name: Initialization Environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo -e "Total CPU cores\t: $(nproc)"
+        cat /proc/cpuinfo | grep 'model name'
+        free -h
+        uname -a
+        [ -f /proc/version ] && cat /proc/version
+        [ -f /etc/issue.net ] && cat /etc/issue.net
+        [ -f /etc/issue ] && cat /etc/issue
+        ulimit -a
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Pull Image
+      run: |
+        docker pull $IMAGE
+        docker images
+    
+    - name: Copy Files
+      id: copy
+      run: |
+        if [[ -f openwrt.tar.zst ]]; then
+            rm openwrt.tar.zst
+        fi
+        ID="$(docker create --name openwrt "$IMAGE")"
+        docker cp $ID:/openwrt/openwrt.tar.zst ./openwrt.tar.zst
+        docker rm $ID
+        docker ps -a
+        ls -alh
+
+    - name: Decompression
+      run: | 
+        if [[ -d openwrt ]]; then
+            rm -rf ./openwrt
+        fi
+        tar -xf openwrt.tar.zst
+        ls -alh ./openwrt
+        rm openwrt.tar.zst
+
+    - name: Show DLL
+      run:  ls -lah ./openwrt/dl
+
+    - name: Clean
+      id: clean
+      run: |
+        cd openwrt
+        echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
+        echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
+        rm -rf ./tmp && rm -rf ./build_dir
+    
+    - name: Feeds Settings
+      run: | 
+        cd $OPENWRTROOT
+        chmod +x ../scripts/*.sh
+        ../scripts/feeds_settings.sh
+        make defconfig
+
+    - name: Show config
+      run: |
+        cd $OPENWRTROOT
+        cat .config
+
+  CompileToolchain:
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
+    timeout-minutes: 1440
+    needs: [CompileInitialize]
+
+    steps:
+    - name: Compile toolchain
+      id: compile
+      run: | 
+        cd ${{ needs.CompileInitialize.outputs.OPENWRTROOT }}
+        echo -e "$(nproc) thread compile"
+        make tools/compile -j$(nproc) || make tools/compile -j1 V=s
+        make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
+        make target/compile -j$(nproc) || make target/compile -j1 V=s IGNORE_ERRORS=1
+        make diffconfig
+  
+  CompileFirmware:
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
+    timeout-minutes: 1440
+    needs: [CompileInitialize, CompileToolchain]
+
+    outputs:
+      OPENWRTROOT: ${{ steps.compile.outputs.OPENWRTROOT }}
+      PLATFORM: ${{ steps.compile.outputs.PLATFORM }}
+      TARGET: ${{ steps.compile.outputs.TARGET }}
+      SUBTARGET: ${{ steps.compile.outputs.SUBTARGET }}
+      FIRMWARE: ${{ steps.compile.outputs.FIRMWARE }}
+      GENERATE_STATUS: ${{ steps.generate.outputs.GENERATE_STATUS }}
+      RELEASE_DATE: ${{ steps.tag.outputs.RELEASE_DATE }}
+      RELEASE_TAG: ${{ steps.tag.outputs.RELEASE_TAG }}
+      RELEASE_STATUS: ${{ steps.tag.outputs.RELEASE_STATUS }}
+      KERNEL_VERSION: ${{ steps.generate.outputs.KERNEL_VERSION }}
+
+    steps:
+
+    - name: Compile package
+      id: compile
+      run: |
+        cd ${{ needs.CompileInitialize.outputs.OPENWRTROOT }}
+        OPENWRTROOT=$(pwd)
+        echo "OPENWRTROOT=$OPENWRTROOT" >> $GITHUB_ENV
+        echo "OPENWRTROOT=$OPENWRTROOT" >> $GITHUB_OUTPUT
+        echo -e "$(nproc) thread compile"
+        make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j1 V=s IGNORE_ERRORS=1
+        make package/index
+        cd $OPENWRTROOT/bin/packages/*
+        PLATFORM=$(basename `pwd`)
+        echo "PLATFORM=$PLATFORM" >> $GITHUB_ENV
+        echo "PLATFORM=$PLATFORM" >> $GITHUB_OUTPUT
+        cd $OPENWRTROOT/bin/targets/*
+        TARGET=$(basename `pwd`)
+        echo "TARGET=$TARGET" >> $GITHUB_ENV
+        echo "TARGET=$TARGET" >> $GITHUB_OUTPUT
+        cd *
+        SUBTARGET=$(basename `pwd`)
+        echo "SUBTARGET=$SUBTARGET" >> $GITHUB_ENV
+        echo "SUBTARGET=$SUBTARGET" >> $GITHUB_OUTPUT
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "FIRMWARE=$PWD" >> $GITHUB_OUTPUT
+        echo "COMPILE_STATUS=success" >> $GITHUB_OUTPUT
+
+    - name: Generate Firmware
+      if: steps.compile.outputs.COMPILE_STATUS == 'success'
+      id: generate
+      run: |
+        cd configs/opkg
+        sed -i "s/subtarget/$SUBTARGET/g" distfeeds*.conf
+        sed -i "s/target\//$TARGET\//g" distfeeds*.conf
+        sed -i "s/platform/$PLATFORM/g" distfeeds*.conf
+        cd $OPENWRTROOT
+        mkdir -p files/etc/uci-defaults/
+        cp ../scripts/init-settings.sh files/etc/uci-defaults/99-init-settings
+        mkdir -p files/etc/opkg
+        cp ../configs/opkg/distfeeds-packages-server.conf files/etc/opkg/distfeeds.conf.server
+        mkdir -p files/etc/opkg/keys
+        cp ../configs/opkg/1035ac73cc4e59e3 files/etc/opkg/keys/1035ac73cc4e59e3
+        if "$KMODS_IN_FIRMWARE" = 'true'
+        then
+            mkdir -p files/www/snapshots
+            cp -r bin/targets files/www/snapshots
+            cp ../configs/opkg/distfeeds-18.06-local.conf files/etc/opkg/distfeeds.conf
+        else
+            cp ../configs/opkg/distfeeds-18.06-remote.conf files/etc/opkg/distfeeds.conf
+        fi
+        cp files/etc/opkg/distfeeds.conf.server files/etc/opkg/distfeeds.conf.mirror
+        sed -i "s/http:\/\/192.168.123.100:2345\/snapshots/https:\/\/openwrt.cc\/snapshots\/$(date +"%Y-%m-%d")\/lean/g" files/etc/opkg/distfeeds.conf.mirror
+        make package/install -j$(nproc) || make package/install -j1 V=s
+        make target/install -j$(nproc) || make target/install -j1 V=s
+        pushd bin/targets/rockchip/armv8
+        kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest
+        # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-rootfs.tar.gz
+        mv config.buildinfo ${{ inputs.compile_version }}-config.buildinfo
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+        popd
+        mkdir -p server/web/snapshots/targets/$TARGET/$SUBTARGET
+        cp -r $OPENWRTROOT/bin/packages server/web/snapshots
+        cp -r $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET/packages server/web/snapshots/targets/$TARGET/$SUBTARGET
+        mv server packages-server
+        zip -qrm ${{ inputs.compile_version }}-packages-server.zip packages-server
+        mv ${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
+        make checksum
+        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_version }}-sha256sums
+        echo "GENERATE_STATUS=success" >> $GITHUB_OUTPUT
+
+        
+    - name: Generate release tag
+      id: tag
+      if: steps.generate.outputs.GENERATE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+          echo "RELEASE_TAG=$(date +"%Y.%m.%d")-Lean1" >> $GITHUB_OUTPUT
+          echo "RELEASE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          touch release.txt
+          echo "本次编译的openwrt源：${{ inputs.lede_source }}
+                后台地址：192.168.2.1
+                common/docker = 无docker/有docker
+                full/lite   = 全插件/精简" >> release.txt
+          echo "RELEASE_STATUS=success" >> $GITHUB_OUTPUT
+
+  UploadFirmware:
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
+    timeout-minutes: 1440
+    needs: [CompileFirmware]
+
+    steps:
+  
+    - name: Remove Images
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled() && needs.CompileFirmware.outputs.RELEASE_STATUS == 'success'
+      run: | 
+        ID_LIST="$(docker images -q)"
+        if [[ -n "${ID_LIST}" ]];then
+           docker rmi $ID_LIST -f
+        fi
+        docker images
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v2.0.4
+      if: needs.CompileFirmware.outputs.RELEASE_STATUS == 'success' && !cancelled() && env.UPLOAD_RELEASE == 'true'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-R2S-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
+          tag_name: ${{ needs.CompileFirmware.outputs.RELEASE_TAG }}
+          body_path: release.txt
+          files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 1
+        keep_minimum_runs: 1
+
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.3.3
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+          keep_latest: 20
+          delete_tags: true
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete Artifacts
+      uses: geekyeggo/delete-artifact@v4
+      with:
+          name: |
+            bin-archive
