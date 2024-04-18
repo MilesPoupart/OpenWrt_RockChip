@@ -1,37 +1,27 @@
-## 机场推荐 [ENET--IEPL内网专线接入](https://www.easy2023.com/#/register?code=Ut7iWMrk)
-# OpenWrt — RockChip多设备固件云编译
-- 支持rk3588，rk356x，rk3399，rk3328
-### 源代码地址
-https://github.com/DHDAXCW/lede-rockchip
+
+<div align="center">
+<a href="/LICENSE">
+    <img src="https://img.shields.io/github/license/MilesPoupart/OpenWrt_RockChip?style=flat&a=1" alt="">
+  </a>
+  </a><a href="https://github.com/MilesPoupart/OpenWrt_RockChip/releases">
+    <img src="https://img.shields.io/github/release/MilesPoupart/OpenWrt_RockChip.svg?style=flat">
+  </a><a href="hhttps://github.com/MilesPoupart/OpenWrt_RockChip/releases">
+    <img src="https://img.shields.io/github/downloads/MilesPoupart/OpenWrt_RockChip/total?style=flat">
+  </a>
+</div>
+<br>
+
+# OpenWrt — RockChip多设备固件云编译 (基于骷髅头源码)<img src="https://img.shields.io/github/downloads/MilesPoupart/OpenWrt_RockChip/total.svg?style=for-the-badge&color=32C955"/>
 
 ### 支持设备
 ```
-embedfire_doornet1
-embedfire_doornet2
-embedfire_lubancat-1n
-embedfire_lubancat-1
-embedfire_lubancat-2n
-embedfire_lubancat-2
-embedfire_lubancat-4
-embedfire_lubancat-5
-friendlyarm_nanopc-t6
-friendlyarm_nanopi-r2c
 friendlyarm_nanopi-r2s
-friendlyarm_nanopi-r4se
-friendlyarm_nanopi-r4s
 friendlyarm_nanopi-r5c
-friendlyarm_nanopi-r5s
-friendlyarm_nanopi-r6c
-friendlyarm_nanopi-r6s
-hinlink_h88k
-hinlink_opc-h66k
-hinlink_opc-h68k
-hinlink_opc-h69k
 ```
 
 ### 固件默认配置
-- 用户名：`root` 密码：`password` 管理IP：`192.168.11.1`
-- 下载地址：https://github.com/DHDAXCW/OpenWrt_RockChip/releases 对应 Tag 标签内下载固件
+- 用户名：`root` 密码：`password` 管理IP：`192.168.2.1`（R2S） `192.168.3.1`（R5C）
+- 下载地址：https://github.com/MilesPoupart/OpenWrt_RockChip/releases 对应 Tag 标签内下载固件
 - 刷机方法请参考dn2刷机 https://github.com/DHDAXCW/OpenWrt_RockChip/blob/master/data/emmc.md
 - 电报交流群：https://t.me/DHDAXCW
 
