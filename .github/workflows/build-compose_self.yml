@@ -82,12 +82,13 @@ on:
 env:
   REPO_URL: https://github.com/${{ inputs.lede_source }}
   REPO_BRANCH: stable
-  CONFIG_FILE: configs/lean/${{ inputs.compile_device }}_${{ inputs.compile_version }}.config
+  CONFIG_FILE: configs/lean/${{ inputs.compile_version }}.config
   DIY_SH: scripts/lean.sh
+  DIY_DEV_SH: scripts/${{ inputs.compile_device }}.sh
   KMODS_IN_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  IMAGE: milespoupart/action-openwrt-cache:r2s_${{ inputs.compile_version }}
+  IMAGE: milespoupart/action-openwrt-cache:oprk_${{ inputs.compile_version }}
   COMMIT_ID: ${{ vars.COMMIT_ID }}
   KERNEL_VER: ${{ inputs.kernel_version }}
 
@@ -184,7 +185,7 @@ jobs:
       if: inputs.task_setting != 'build-only'
       run: |
          cd $OPENWRTROOT/package/lean/autocore/files/arm
-         sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/NanoPi-R2S"><%:固件下载%></a></td></tr>' index.htm
+         sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/OpenWrt_RockChip"><%:固件下载%></a></td></tr>' index.htm
 
     - name: Install Feeds
       if: inputs.task_setting != 'build-only'
@@ -201,12 +202,14 @@ jobs:
         chmod +x scripts/*.sh
         cd $OPENWRTROOT
         ../$DIY_SH
+        ../$DIY_DEV_SH
         if [ "$KERNEL_VER" != "6.1" ]; then
           sed -i "s/6.1/$KERNEL_VER/g" target/linux/rockchip/Makefile
         fi
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
+        sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' lite.config
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
             echo '
         CONFIG_DOCKER_CGROUP_OPTIONS=y
@@ -218,7 +221,7 @@ jobs:
         CONFIG_DOCKER_STO_BTRFS=y
         CONFIG_DOCKER_STO_EXT4=y
         CONFIG_PACKAGE_luci-app-dockerman=y
-        CONFIG_PACKAGE_luci-lib-docker=y' >> .config        
+        CONFIG_PACKAGE_luci-lib-docker=y' >> .config
         fi
         make defconfig
         
@@ -416,22 +419,22 @@ jobs:
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-r2s.manifest
-        # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-rootfs.tar.gz
-        mv config.buildinfo ${{ inputs.compile_version }}-config.buildinfo
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
+        # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
+        mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-config.buildinfo
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz
         popd
         mkdir -p server/web/snapshots/targets/$TARGET/$SUBTARGET
         cp -r $OPENWRTROOT/bin/packages server/web/snapshots
         cp -r $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET/packages server/web/snapshots/targets/$TARGET/$SUBTARGET
         mv server packages-server
-        zip -qrm ${{ inputs.compile_version }}-packages-server.zip packages-server
-        mv ${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
+        zip -qrm ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip packages-server
+        mv ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
         make checksum
-        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_version }}-sha256sums
+        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-sha256sums
         echo "GENERATE_STATUS=success" >> $GITHUB_OUTPUT
 
         
@@ -470,7 +473,7 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-R2S-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
+          name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-R2S/R5C-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
           tag_name: ${{ needs.CompileFirmware.outputs.RELEASE_TAG }}
           body_path: release.txt
           files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
