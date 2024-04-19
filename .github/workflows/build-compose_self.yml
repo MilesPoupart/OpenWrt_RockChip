@@ -419,9 +419,9 @@ jobs:
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        kernelv=`cat openwrt-rockchip-armv8.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
+        mv openwrt-rockchip-armv8.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
         # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
         mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-config.buildinfo
         mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
