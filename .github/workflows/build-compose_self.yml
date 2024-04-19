@@ -82,8 +82,8 @@ on:
 env:
   REPO_URL: https://github.com/${{ inputs.lede_source }}
   REPO_BRANCH: stable
-  CONFIG_FILE: configs/lean/${{ inputs.compile_version }}.config
-  DIY_SH: scripts/lean.sh
+  CONFIG_FILE: configs/lede/${{ inputs.compile_version }}.config
+  DIY_SH: scripts/lede.sh
   DIY_DEV_SH: scripts/${{ inputs.compile_device }}.sh
   KMODS_IN_FIRMWARE: true
   UPLOAD_RELEASE: true
