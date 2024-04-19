@@ -209,7 +209,7 @@ jobs:
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
-        sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' lite.config
+        sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
             echo '
         CONFIG_DOCKER_CGROUP_OPTIONS=y
