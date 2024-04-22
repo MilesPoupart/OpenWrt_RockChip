@@ -45,6 +45,13 @@ wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/D
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 
+# uboot-rockchip
+rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
+rm -rf package/boot/arm-trusted-firmware-rockchip
+rm -rf package/boot/uboot-rockchip
+github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
+github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
+
 # Clone community packages
 mkdir package/community
 pushd package/community
