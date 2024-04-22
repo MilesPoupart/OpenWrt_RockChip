@@ -442,13 +442,13 @@ jobs:
       id: tag
       if: steps.generate.outputs.GENERATE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-          echo "RELEASE_TAG=$(date +"%Y.%m.%d")-Lean1" >> $GITHUB_OUTPUT
+          echo "RELEASE_TAG=$(date +"%Y.%m.%d")-Lean-${{ inputs.compile_device }}" >> $GITHUB_OUTPUT
           echo "RELEASE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "本次编译的openwrt源：${{ inputs.lede_source }}
-                后台地址：192.168.2.1
+                后台地址：192.168.2.1(r2s)/192.168.3.1(r5c)
                 common/docker = 无docker/有docker
-                full/lite   = 全插件/精简" >> release.txt
+                full/lite = 全插件/精简" >> release.txt
           echo "RELEASE_STATUS=success" >> $GITHUB_OUTPUT
 
   UploadFirmware:
@@ -473,7 +473,7 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-R2S/R5C-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
+          name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-${{ inputs.compile_device }}-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
           tag_name: ${{ needs.CompileFirmware.outputs.RELEASE_TAG }}
           body_path: release.txt
           files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
