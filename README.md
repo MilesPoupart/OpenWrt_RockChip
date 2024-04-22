@@ -11,7 +11,7 @@
 </div>
 <br>
 
-# OpenWrt — RockChip多设备固件云编译 (基于骷髅头源码)<img src="https://img.shields.io/github/downloads/MilesPoupart/OpenWrt_RockChip/total.svg?style=for-the-badge&color=32C955"/>
+# OpenWrt — R2S/R5C (基于骷髅头源码)<img src="https://img.shields.io/github/downloads/MilesPoupart/OpenWrt_RockChip/total.svg?style=for-the-badge&color=32C955"/>
 
 ### 支持设备
 ```
@@ -21,8 +21,8 @@ friendlyarm_nanopi-r5c
 
 ### 固件默认配置
 - 用户名：`root` 密码：`password` 管理IP：`192.168.2.1`（R2S） `192.168.3.1`（R5C）
-- 下载地址：https://github.com/MilesPoupart/OpenWrt_RockChip/releases 对应 Tag 标签内下载固件
-- 刷机方法请参考dn2刷机 https://github.com/DHDAXCW/OpenWrt_RockChip/blob/master/data/emmc.md
+- [下载地址](https://github.com/MilesPoupart/OpenWrt_RockChip/releases) 对应 Tag 标签内下载固件
+- 刷机方法请参考dn2刷机 [点这里查看](https://github.com/DHDAXCW/OpenWrt_RockChip/blob/master/data/emmc.md)
 - 电报交流群：https://t.me/DHDAXCW
 
 ### 固件特色
@@ -43,8 +43,6 @@ friendlyarm_nanopi-r5c
 - **本人不对任何人因使用本固件所遭受的任何理论或实际的损失承担责任！**
 
 - **本固件禁止用于任何商业用途，请务必严格遵守国家互联网使用相关法律规定！**
-
-### 有bug请在 https://github.com/DHDAXCW/OpenWrt_RockChip/issues 提问题
 
 ### 鸣谢
 

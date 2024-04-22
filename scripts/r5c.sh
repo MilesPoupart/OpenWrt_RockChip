@@ -15,4 +15,4 @@ echo -e "                 /____/                                     " >> packag
 echo -e "------------------------------------------------------------" >> package/base-files/files/etc/banner
 echo -e "        MilesPoupart's MagicWrt built on "$(date +%Y.%m.%d)"\n------------------------------------------------------------" >> package/base-files/files/etc/banner
 
-cp -f $GITHUB_WORKSPACE/999-fuck-rockchip-pcie.patch target/linux/rockchip/patches-6.1/999-fuck-rockchip-pcie.patch
+cp -f $GITHUB_WORKSPACE/data/999-fuck-rockchip-pcie.patch target/linux/rockchip/patches-6.1/999-fuck-rockchip-pcie.patch
