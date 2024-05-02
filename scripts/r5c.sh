@@ -1,3 +1,5 @@
+sed -i 's/UBOOT_DEVICE_NAME := nanopi-r5s-rk3568/UBOOT_DEVICE_NAME := nanopi-r5c-rk3568/g' target/linux/rockchip/image/armv8.mk
+
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.3.1/g' package/base-files/files/bin/config_generate
 sed -i '/uci commit system/i\uci set system.@system[0].hostname='MagicWrt'' package/lean/default-settings/files/zzz-default-settings
