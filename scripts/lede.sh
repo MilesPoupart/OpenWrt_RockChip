@@ -127,7 +127,7 @@ git clone --depth=1 https://github.com/NateLol/luci-app-oled
 
 # Add ServerChan
 rm -rf ../../customfeeds/luci/applications/luci-app-serverchan
-git clone -b openwrt-18.06 --depth=1 https://github.com/tty228/luci-app-wechatpush.git
+git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git
 
 # Add luci-app-dockerman
 rm -rf ../../customfeeds/luci/collections/luci-lib-docker
@@ -137,7 +137,7 @@ github_partial_clone lisaac luci-app-dockerman use_default_branch applications/l
 github_partial_clone lisaac luci-lib-docker use_default_branch collections/luci-lib-docker luci-lib-docker
 
 # Add luci-theme
-git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
+git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon
 git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
 rm -rf ../../customfeeds/luci/themes/luci-theme-argon
 rm -rf ../../customfeeds/luci/themes/luci-theme-argon-mod
@@ -160,7 +160,7 @@ git clone https://github.com/sbwml/luci-app-alist --depth=1
 
 # Add luci-app-smartdns & smartdns
 rm -rf ../../customfeeds/luci/applications/luci-app-smartdns
-git clone --depth=1 -b lede https://github.com/pymumu/luci-app-smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns
 
 # Add luci-app-wolplus
 github_partial_clone sundaqiang openwrt-packages use_default_branch luci-app-wolplus luci-app-wolplus

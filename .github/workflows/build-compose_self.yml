@@ -41,6 +41,14 @@ on:
           - '5.15'
           - '5.10'
           - '5.4'
+      luci_version:
+        description: 'LuCI version'
+        required: true
+        default: 'openwrt-23.05'
+        type: choice
+        options:
+        - 'master'
+        - 'openwrt-23.05'
       use_machine:
         description: 'Machine'
         required: true
@@ -102,6 +110,9 @@ jobs:
     steps:
     - name: Show choice
       run: |
+        echo "LEDE Source=${{ inputs.lede_source }}"
+        echo "Compile Device=${{ inputs.compile_device}}"
+        echo "LuCI Version=${{ inputs.luci_version}}"
         echo "Compile Version=${{ inputs.compile_version }}"
         echo "Tsak settings=${{ inputs.task_setting }}"
         echo "Compile machine=${{ inputs.use_machine }}"
@@ -177,7 +188,7 @@ jobs:
         echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
         mkdir customfeeds
         git clone --depth=1 https://github.com/MilesPoupart/packages customfeeds/packages
-        git clone --depth=1 https://github.com/MilesPoupart/luci customfeeds/luci
+        git clone --depth=1 -b ${{ inputs.luci_version }} https://github.com/MilesPoupart/luci customfeeds/luci
         chmod +x ../scripts/*.sh
         ../scripts/hook-feeds.sh
 
