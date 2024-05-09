@@ -46,7 +46,7 @@ git clone --depth=1 https://github.com/immortalwrt/openwrt-tmate
 
 # Add gotop
 rm -rf packages/admin/gotop
-github_partial_clone immortalwrt packages openwrt-18.06 admin/gotop packages/admin/gotop
+github_partial_clone immortalwrt packages use_default_branch admin/gotop packages/admin/gotop
 
 # Add minieap
 rm -rf packages/net/minieap

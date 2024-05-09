@@ -59,6 +59,9 @@ pushd package/community
 # Add luci-app-watchcat-plus
 git clone https://github.com/gngpp/luci-app-watchcat-plus.git
 
+# add luci-app-auguardhome
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci-app-adguardhome
+
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
 rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
@@ -124,6 +127,10 @@ git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
 
 # Add luci-app-oled (R2S Only)
 git clone --depth=1 https://github.com/NateLol/luci-app-oled
+
+# add wrtbwmon
+github_partial_clone brvphoenix luci-app-wrtbwmon use_default_branch luci-app-wrtbwmon luci-app-wrtbwmon
+github_partial_clone brvphoenix wrtbwmon use_default_branch wrtbwmon wrtbwmon
 
 # Add ServerChan
 rm -rf ../../customfeeds/luci/applications/luci-app-serverchan
