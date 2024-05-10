@@ -59,9 +59,6 @@ pushd package/community
 # Add luci-app-watchcat-plus
 git clone https://github.com/gngpp/luci-app-watchcat-plus.git
 
-# add luci-app-auguardhome
-github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci-app-adguardhome
-
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
 rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
@@ -164,10 +161,6 @@ git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
 git clone https://github.com/sbwml/luci-app-alist --depth=1
-
-# Add luci-app-smartdns & smartdns
-rm -rf ../../customfeeds/luci/applications/luci-app-smartdns
-git clone --depth=1 https://github.com/pymumu/luci-app-smartdns
 
 # Add luci-app-wolplus
 github_partial_clone sundaqiang openwrt-packages use_default_branch luci-app-wolplus luci-app-wolplus

@@ -24,6 +24,16 @@ function github_partial_clone(){
 # Svn checkout packages from immortalwrt's repository
 pushd customfeeds
 
+# add missing luci packages
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci/applications/luci-app-adguardhome
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adbyby-plus luci/applications/luci-app-adbyby-plus
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-cpufreq luci/applications/luci-app-cpufreq
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-turboacc luci/applications/luci-app-turboacc
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-wireguard luci/applications/luci-app-wireguard
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-verysync luci/applications/luci-app-verysync
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-xlnetacc luci/applications/luci-app-xlnetacc
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-zerotier luci/applications/luci-app-zerotier
+
 # Add luci-app-eqos
 rm -rf luci/applications/luci-app-eqos
 github_partial_clone immortalwrt luci use_default_branch applications/luci-app-eqos luci/applications/luci-app-eqos
@@ -52,9 +62,11 @@ github_partial_clone immortalwrt packages use_default_branch admin/gotop package
 rm -rf packages/net/minieap
 github_partial_clone immortalwrt packages use_default_branch net/minieap packages/net/minieap
 
-# Replace smartdns
+# Replace luci-app-smartdns & smartdns
 # rm -rf packages/net/smartdns
 # github_partial_clone immortalwrt packages use_default_branch net/smartdns packages/net/smartdns
+rm -rf luci/applications/luci-app-smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns
 
 # Replace watchcat with the official version
 rm -rf packages/utils/watchcat
