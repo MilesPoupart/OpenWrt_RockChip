@@ -51,9 +51,6 @@ github_partial_clone immortalwrt luci use_default_branch protocols/luci-proto-mo
 github_partial_clone immortalwrt luci use_default_branch applications/luci-app-dufs luci/applications/luci-app-dufs
 github_partial_clone immortalwrt packages use_default_branch net/dufs packages/net/dufs
 
-# Add tmate
-git clone --depth=1 https://github.com/immortalwrt/openwrt-tmate
-
 # Add gotop
 rm -rf packages/admin/gotop
 github_partial_clone immortalwrt packages use_default_branch admin/gotop packages/admin/gotop
@@ -66,7 +63,7 @@ github_partial_clone immortalwrt packages use_default_branch net/minieap package
 # rm -rf packages/net/smartdns
 # github_partial_clone immortalwrt packages use_default_branch net/smartdns packages/net/smartdns
 rm -rf luci/applications/luci-app-smartdns
-git clone --depth=1 https://github.com/pymumu/luci-app-smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns luci/applications/luci-app-smartdns
 
 # Replace watchcat with the official version
 rm -rf packages/utils/watchcat

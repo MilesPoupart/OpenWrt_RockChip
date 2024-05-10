@@ -56,6 +56,9 @@ github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-t
 mkdir package/community
 pushd package/community
 
+# Add tmate
+git clone --depth=1 https://github.com/immortalwrt/openwrt-tmate
+
 # Add luci-app-watchcat-plus
 git clone https://github.com/gngpp/luci-app-watchcat-plus.git
 
