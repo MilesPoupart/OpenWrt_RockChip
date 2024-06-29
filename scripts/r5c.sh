@@ -1,4 +1,10 @@
-sed -i 's/UBOOT_DEVICE_NAME := nanopi-r5s-rk3568/UBOOT_DEVICE_NAME := nanopi-r5c-rk3568/g' target/linux/rockchip/image/armv8.mk
+# uboot-rockchip
+# rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
+# rm -rf package/boot/arm-trusted-firmware-rockchip
+# rm -rf package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
+# sed -i 's/UBOOT_DEVICE_NAME := nanopi-r5s-rk3568/UBOOT_DEVICE_NAME := nanopi-r5c-rk3568/g' target/linux/rockchip/image/armv8.mk
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.3.1/g' package/base-files/files/bin/config_generate
