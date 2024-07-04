@@ -3,11 +3,11 @@ rm -rf target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-ope
 cp -f $GITHUB_WORKSPACE/data/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
 
 # uboot-rockchip
-rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
-rm -rf package/boot/arm-trusted-firmware-rockchip
-rm -rf package/boot/uboot-rockchip
-github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
-github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
+# rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
+# rm -rf package/boot/arm-trusted-firmware-rockchip
+# rm -rf package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
