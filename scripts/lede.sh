@@ -29,7 +29,8 @@ function github_partial_clone(){
 }
 
 rm -rf package/base-files/files/lib/preinit/80_mount_root
-wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/DHDAXCW/lede-rockchip/stable/package/base-files/files/lib/preinit/80_mount_root 
+cp -f $GITHUB_WORKSPACE/80_mount_root package/base-files/files/lib/preinit/80_mount_root
+# wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/DHDAXCW/lede-rockchip/stable/package/base-files/files/lib/preinit/80_mount_root 
 # rm -rf package/libs/libnl-tiny
 # rm -rf package/kernel/mac80211
 # rm -rf package/kernel/mt76
