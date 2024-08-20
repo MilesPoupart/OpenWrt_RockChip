@@ -162,9 +162,8 @@ git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
 git clone https://github.com/sbwml/luci-app-alist --depth=1
-cd luci-app-alist
-git git reset --hard d07184f9acc819cf5927c5ab37d9fae1e4804a36
-cd ..
+rm -rf luci-app-alist/luci-app-alist
+git clone https://github.com/sbwml/luci-app-alist luci-app-alist/luci-app-alist -b lua --depth=1
 
 # Add luci-app-smartdns & smartdns
 rm -rf ../../customfeeds/luci/applications/luci-app-smartdns
