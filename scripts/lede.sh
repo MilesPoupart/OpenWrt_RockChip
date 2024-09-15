@@ -51,7 +51,7 @@ mkdir package/community
 pushd package/community
 
 # Add luci-app-watchcat-plus
-git clone https://github.com/gngpp/luci-app-watchcat-plus.git
+git clone https://github.com/MilesPoupart/luci-app-watchcat-plus.git
 
 # add luci-app-auguardhome
 # github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci-app-adguardhome
@@ -151,8 +151,8 @@ cp -f $GITHUB_WORKSPACE/data/bg1.jpg luci-theme-argon/htdocs/luci-static/argon/i
 git clone https://github.com/DHDAXCW/theme
 rm -rf ../../customfeeds/luci/themes/luci-theme-design
 rm -rf ../../customfeeds/luci/applications/luci-app-design-config
-git clone --depth=1 https://github.com/gngpp/luci-app-design-config
-git clone --depth=1 https://github.com/gngpp/luci-theme-design
+git clone --depth=1 https://github.com/MilesPoupart/luci-app-design-config
+git clone --depth=1 https://github.com/MilesPoupart/luci-theme-design
 
 # Add subconverter
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
