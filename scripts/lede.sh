@@ -44,7 +44,7 @@ cp -f $GITHUB_WORKSPACE/80_mount_root package/base-files/files/lib/preinit/80_mo
 
 # golang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 
 # Clone community packages
 mkdir package/community
@@ -161,9 +161,7 @@ git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
-git clone https://github.com/sbwml/luci-app-alist --depth=1
-rm -rf luci-app-alist/luci-app-alist
-git clone https://github.com/sbwml/luci-app-alist luci-app-alist/luci-app-alist -b lua --depth=1
+git clone -b lua --depth=1 https://github.com/sbwml/luci-app-alist
 
 # Add luci-app-smartdns & smartdns
 rm -rf ../../customfeeds/luci/applications/luci-app-smartdns
