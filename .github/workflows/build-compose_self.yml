@@ -153,6 +153,7 @@ jobs:
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         date
+        pip3 install pyelftools
         
     - name: Login to Docker Hub
       if: inputs.task_setting != 'build-only'
