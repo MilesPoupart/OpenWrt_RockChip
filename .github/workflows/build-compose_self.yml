@@ -244,7 +244,7 @@ jobs:
         # cat .config
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        find dl -size -1024c ! -name '*.sha256' -exec rm -f {} \;
 
     - name: Comporession
       if: inputs.task_setting != 'build-only'
