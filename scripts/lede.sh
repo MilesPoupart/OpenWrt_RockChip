@@ -56,9 +56,6 @@ git clone --depth=1 https://github.com/immortalwrt/openwrt-tmate
 # Add luci-app-watchcat-plus
 git clone https://github.com/MilesPoupart/luci-app-watchcat-plus.git
 
-# add luci-app-auguardhome
-github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci-app-adguardhome
-
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
 rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
@@ -74,6 +71,8 @@ github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalanc
 # git clone --depth=1 https://github.com/DHDAXCW/dhdaxcw-app
 
 # Add luci-app-passwall
+rm -rf ../../customfeeds/luci/applications/luci-app-passwall
+rm -rf ../../customfeeds/luci/applications/luci-app-passwall2
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages
@@ -113,6 +112,7 @@ git clone --depth=1 https://github.com/MilesPoupart/luci-app-vssr
 git clone --depth=1 https://github.com/ysc3839/luci-proto-minieap
 
 # Add OpenClash
+rm -rf ../../customfeeds/luci/applications/luci-app-openclash
 github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash
 
 # Add ddnsto & linkease
@@ -161,9 +161,11 @@ git clone --depth=1 https://github.com/MilesPoupart/luci-theme-design
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 
 # Add luci-app-lucky
+rm -rf ../../customfeeds/luci/applications/luci-app-lucky
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
+rm -rf ../../customfeeds/luci/applications/luci-app-alist
 git clone --depth=1 https://github.com/sbwml/luci-app-alist
 
 # Add luci-app-smartdns & smartdns
