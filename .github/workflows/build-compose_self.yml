@@ -33,7 +33,7 @@ on:
       kernel_version:
           description: 'Linux kernel version'
           required: true
-          default: '6.1'
+          default: '6.6'
           type: choice
           options:
           - '6.6'
@@ -44,7 +44,7 @@ on:
       luci_version:
         description: 'LuCI version'
         required: true
-        default: 'openwrt-23.05'
+        default: 'master'
         type: choice
         options:
         - 'master'
@@ -52,7 +52,7 @@ on:
       use_machine:
         description: 'Machine'
         required: true
-        default: '10700'
+        default: '7700HQ'
         type: choice
         options:
         - 7700HQ
@@ -147,7 +147,7 @@ jobs:
         ulimit -a
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install rdate zstd
+        sudo -E apt-get -qq install rdate zstd python3-pyelftools
         # sudo -E apt-get -qq install $(curl -fsSL https://raw.githubusercontent.com/MilesPoupart/openwrt-list/master/depends-ubuntu-2204) tree
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
@@ -214,8 +214,8 @@ jobs:
         cd $OPENWRTROOT
         ../$DIY_SH
         ../$DIY_DEV_SH
-        if [ "$KERNEL_VER" != "6.1" ]; then
-          sed -i "s/6.1/$KERNEL_VER/g" target/linux/rockchip/Makefile
+        if [ "$KERNEL_VER" != "6.6" ]; then
+          sed -i "s/6.6/$KERNEL_VER/g" target/linux/rockchip/Makefile
         fi
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
@@ -244,7 +244,7 @@ jobs:
         # cat .config
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        find dl -size -1024c ! -name '*.sha256' -exec rm -f {} \;
 
     - name: Comporession
       if: inputs.task_setting != 'build-only'

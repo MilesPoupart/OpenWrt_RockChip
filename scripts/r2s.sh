@@ -1,6 +1,8 @@
-# remove 1608Mhz for kernel 6.1
+# remove 1608Mhz for kernel 6.1 & 6.6
 rm -rf target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-cp -f $GITHUB_WORKSPACE/data/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
+rm -rf target/linux/rockchip/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
+cp -f $GITHUB_WORKSPACE/data/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
+cp -f $GITHUB_WORKSPACE/data/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate

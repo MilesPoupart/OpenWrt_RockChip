@@ -29,7 +29,8 @@ function github_partial_clone(){
 }
 
 rm -rf package/base-files/files/lib/preinit/80_mount_root
-wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/DHDAXCW/lede-rockchip/stable/package/base-files/files/lib/preinit/80_mount_root 
+cp -f $GITHUB_WORKSPACE/80_mount_root package/base-files/files/lib/preinit/80_mount_root
+# wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/DHDAXCW/lede-rockchip/stable/package/base-files/files/lib/preinit/80_mount_root 
 # rm -rf package/libs/libnl-tiny
 # rm -rf package/kernel/mac80211
 # rm -rf package/kernel/mt76
@@ -43,14 +44,7 @@ wget -P package/base-files/files/lib/preinit https://raw.githubusercontent.com/D
 
 # golang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
-
-# uboot-rockchip
-rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
-rm -rf package/boot/arm-trusted-firmware-rockchip
-rm -rf package/boot/uboot-rockchip
-github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
-github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
+git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 
 # Clone community packages
 mkdir package/community
@@ -60,7 +54,10 @@ pushd package/community
 git clone --depth=1 https://github.com/immortalwrt/openwrt-tmate
 
 # Add luci-app-watchcat-plus
-git clone https://github.com/gngpp/luci-app-watchcat-plus.git
+git clone https://github.com/MilesPoupart/luci-app-watchcat-plus.git
+
+# add luci-app-auguardhome
+github_partial_clone MilesPoupart luci use_default_branch applications/luci-app-adguardhome luci-app-adguardhome
 
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
@@ -72,6 +69,9 @@ rm -rf openwrt-package/luci-app-verysync
 
 # Add luci-app-irqbalance by QiuSimons https://github.com/QiuSimons/OpenWrt-Add
 github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalance luci-app-irqbalance
+
+# apppppppp
+# git clone --depth=1 https://github.com/DHDAXCW/dhdaxcw-app
 
 # Add luci-app-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
@@ -103,7 +103,7 @@ git clone --depth=1 https://github.com/fw876/helloworld
 
 # Add luci-app-unblockneteasemusic
 rm -rf ../../customfeeds/luci/applications/luci-app-unblockmusic
-git clone --branch master https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic.git
+git clone https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic.git
 
 # Add luci-app-vssr <M>
 git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb.git
@@ -154,8 +154,8 @@ cp -f $GITHUB_WORKSPACE/data/bg1.jpg luci-theme-argon/htdocs/luci-static/argon/i
 git clone https://github.com/DHDAXCW/theme
 rm -rf ../../customfeeds/luci/themes/luci-theme-design
 rm -rf ../../customfeeds/luci/applications/luci-app-design-config
-git clone --depth=1 https://github.com/gngpp/luci-app-design-config
-git clone --depth=1 https://github.com/gngpp/luci-theme-design
+git clone --depth=1 https://github.com/MilesPoupart/luci-app-design-config
+git clone --depth=1 https://github.com/MilesPoupart/luci-theme-design
 
 # Add subconverter
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
@@ -164,14 +164,18 @@ git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
-git clone https://github.com/sbwml/luci-app-alist --depth=1
+git clone --depth=1 https://github.com/sbwml/luci-app-alist
+
+# Add luci-app-smartdns & smartdns
+rm -rf ../../customfeeds/luci/applications/luci-app-smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns
 
 # Add luci-app-wolplus
 github_partial_clone sundaqiang openwrt-packages use_default_branch luci-app-wolplus luci-app-wolplus
 
 # Add apk (Apk Packages Manager)
-rm -rf ../../customfeeds/packages/utils/apk
-github_partial_clone openwrt packages use_default_branch utils/apk apk
+# rm -rf ../../customfeeds/packages/utils/apk
+# github_partial_clone openwrt packages use_default_branch utils/apk apk
 
 # Add luci-app-poweroff
 git clone --depth=1 https://github.com/esirplayground/luci-app-poweroff
@@ -205,5 +209,21 @@ pushd package/kernel/mt76
 sed -i '/mt7662u_rom_patch.bin/a\\techo mt76-usb disable_usb_sg=1 > $\(1\)\/etc\/modules.d\/mt76-usb' Makefile
 popd
 
+# rm -rf nas-packages-luci/luci/luci-app-istorex
+# rm -rf package/feeds/packages/libmbim
+# rm -rf package/feeds/packages/lame
+# rm -rf package/feeds/packages/apk
+# rm -rf package/feeds/packages/adguardhome
+
 # Change default shell to zsh
 sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
+
+# uboot-rockchip
+# rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
+# rm -rf package/boot/arm-trusted-firmware-rockchip
+# rm -rf package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
+# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
+
+# uboot-rockchip r5c fix
+# sed -i 's/UBOOT_DEVICE_NAME := nanopi-r5s-rk3568/UBOOT_DEVICE_NAME := nanopi-r5c-rk3568/g' target/linux/rockchip/image/armv8.mk
