@@ -215,13 +215,3 @@ popd
 
 # Change default shell to zsh
 sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
-
-# uboot-rockchip
-# rm -rf package/boot/arm-trusted-firmware-rockchip-vendor
-# rm -rf package/boot/arm-trusted-firmware-rockchip
-# rm -rf package/boot/uboot-rockchip
-# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/uboot-rockchip package/boot/uboot-rockchip
-# github_partial_clone DHDAXCW lede-rockchip use_default_branch package/boot/arm-trusted-firmware-rockchip package/boot/arm-trusted-firmware-rockchip
-
-# uboot-rockchip r5c fix
-# sed -i 's/UBOOT_DEVICE_NAME := nanopi-r5s-rk3568/UBOOT_DEVICE_NAME := nanopi-r5c-rk3568/g' target/linux/rockchip/image/armv8.mk
