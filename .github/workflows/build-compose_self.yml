@@ -52,11 +52,11 @@ on:
       use_machine:
         description: 'Machine'
         required: true
-        default: '7700HQ'
+        default: '12900F'
         type: choice
         options:
-        - 7700HQ
-        - '10700'
+        - '7700HQ'
+        - '12900F'
       compile_version:
         description: 'Version'
         required: true
