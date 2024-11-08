@@ -162,6 +162,8 @@ git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
+rm -rf ../../customfeeds/packages/net/alist
+rm -rf ../../customfeeds/luci/applications/luci-app-alist
 git clone -b lua --depth=1 https://github.com/sbwml/luci-app-alist
 
 # Add luci-app-smartdns & smartdns
