@@ -6,8 +6,9 @@ cp -f $GITHUB_WORKSPACE/data/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-ope
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/luci2/bin/config_generate
 sed -i '/uci commit system/i\uci set system.@system[0].hostname='HarmonyWrt'' package/lean/default-settings/files/zzz-default-settings
-sed -i "s/OpenWrt /MilesPoupart @ HarmonyWrt /g" package/lean/default-settings/files/zzz-default-settings
+sed -i "s/LEDE /MilesPoupart @ HarmonyWrt /g" package/lean/default-settings/files/zzz-default-settings
 
 rm package/base-files/files/etc/banner
 touch package/base-files/files/etc/banner
