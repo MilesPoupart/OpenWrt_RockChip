@@ -210,8 +210,6 @@ sed -i '/mt7662u_rom_patch.bin/a\\techo mt76-usb disable_usb_sg=1 > $\(1\)\/etc\
 popd
 
 # rm -rf nas-packages-luci/luci/luci-app-istorex
-# rm -rf package/feeds/packages/libmbim
-# rm -rf package/feeds/packages/lame
 # rm -rf package/feeds/packages/apk
 # rm -rf package/feeds/packages/adguardhome
 
