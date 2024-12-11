@@ -254,7 +254,7 @@ jobs:
     - name: Build and push
       if: inputs.task_setting != 'build-only'
       id: docker_build
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: ./
         file: ./Dockerfile
@@ -479,7 +479,7 @@ jobs:
         docker images
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@master
+      uses: softprops/action-gh-release@v2.1.0
       if: needs.CompileFirmware.outputs.RELEASE_STATUS == 'success' && !cancelled() && env.UPLOAD_RELEASE == 'true'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -496,7 +496,7 @@ jobs:
         keep_minimum_runs: 1
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.3.3
+      uses: dev-drprasad/delete-older-releases@v0.3.4
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
           keep_latest: 20
