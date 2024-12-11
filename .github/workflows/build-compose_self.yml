@@ -96,7 +96,7 @@ env:
   KMODS_IN_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  IMAGE: milespoupart/action-openwrt-cache:oprk_${{ inputs.compile_device }}_${{ inputs.compile_version }}
+  IMAGE: milespoupart/action-openwrt-cache:oprk_${{ inputs.compile_device }}_${{ inputs.docker_contain }}_${{ inputs.compile_version }}
   COMMIT_ID: ${{ vars.COMMIT_ID }}
   KERNEL_VER: ${{ inputs.kernel_version }}
 
