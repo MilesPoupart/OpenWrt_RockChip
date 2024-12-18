@@ -159,6 +159,7 @@ git clone --depth=1 https://github.com/MilesPoupart/luci-theme-design
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 
 # Add luci-app-lucky
+rm -rf ../../customfeeds/packages/net/lucky
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
 # alist
