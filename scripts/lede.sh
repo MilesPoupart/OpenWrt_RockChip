@@ -40,7 +40,7 @@ cp -f "$GITHUB_WORKSPACE/80_mount_root" package/base-files/files/lib/preinit/80_
 
 # Gloang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
 
 mkdir -p package/community
 pushd package/community
