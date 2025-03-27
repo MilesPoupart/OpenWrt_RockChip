@@ -36,6 +36,7 @@ on:
           default: '6.6'
           type: choice
           options:
+          - '6.12'
           - '6.6'
           - '6.1'
           - '5.15'
@@ -480,7 +481,7 @@ jobs:
         docker images
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@v2.1.0
+      uses: softprops/action-gh-release@v2.2.1
       if: needs.CompileFirmware.outputs.RELEASE_STATUS == 'success' && !cancelled() && env.UPLOAD_RELEASE == 'true'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

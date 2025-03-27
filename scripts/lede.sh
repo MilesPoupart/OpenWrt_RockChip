@@ -47,7 +47,7 @@ pushd package/community
 
 # Add luci-app-watchcat-plus
 rm -rf ../../customfeeds/luci/applications/luci-app-watchcat-plus
-git clone https://github.com/MilesPoupart/luci-app-watchcat-plus.git
+git clone https://github.com/0x676e67/luci-app-watchcat-plus.git
 
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
@@ -160,11 +160,12 @@ rm -rf ../../customfeeds/luci/applications/luci-app-serverchan
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git
 
 # Add luci-app-dockerman
-rm -rf ../../customfeeds/luci/collections/luci-lib-docker
-rm -rf ../../customfeeds/luci/applications/luci-app-docker
-rm -rf ../../customfeeds/luci/applications/luci-app-dockerman
-github_partial_clone lisaac luci-app-dockerman use_default_branch applications/luci-app-dockerman luci-app-dockerman
-github_partial_clone lisaac luci-lib-docker use_default_branch collections/luci-lib-docker luci-lib-docker
+# rm -rf ../../customfeeds/luci/collections/luci-lib-docker
+# rm -rf ../../customfeeds/luci/applications/luci-app-docker
+# rm -rf ../../customfeeds/luci/applications/luci-app-dockerman
+# github_partial_clone lisaac luci-app-dockerman use_default_branch applications/luci-app-dockerman luci-app-dockerman
+# github_partial_clone lisaac luci-lib-docker use_default_branch collections/luci-lib-docker luci-lib-docker
+
 # Add luci-theme
 rm -rf ../../customfeeds/luci/themes/luci-theme-argon
 rm -rf ../../customfeeds/luci/themes/luci-theme-argon-mod
@@ -175,8 +176,8 @@ rm -rf ./luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 cp -f "$GITHUB_WORKSPACE/data/bg1.jpg" luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 rm -rf ../../customfeeds/luci/themes/luci-theme-design
 rm -rf ../../customfeeds/luci/applications/luci-app-design-config
-git clone --depth=1 https://github.com/MilesPoupart/luci-app-design-config
-git clone --depth=1 https://github.com/MilesPoupart/luci-theme-design
+git clone --depth=1 https://github.com/0x676e67/luci-app-design-config
+git clone --depth=1 https://github.com/0x676e67/luci-theme-design
 
 # Add subconverter
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
