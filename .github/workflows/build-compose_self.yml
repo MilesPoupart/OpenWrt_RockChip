@@ -189,7 +189,6 @@ jobs:
         echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
         mkdir customfeeds
         git clone --depth=1 https://github.com/MilesPoupart/packages customfeeds/packages
-        ls customfeeds/packages/net/pdnsd-alt
         git clone --depth=1 -b ${{ inputs.luci_version }} https://github.com/MilesPoupart/luci customfeeds/luci
         chmod +x ../scripts/*.sh
         ../scripts/hook-feeds.sh
@@ -214,7 +213,6 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRTROOT/.config
         chmod +x scripts/*.sh
         cd $OPENWRTROOT
-        ls customfeeds/packages/net/pdnsd-alt
         ../$DIY_SH
         ../$DIY_DEV_SH
         if [ "$KERNEL_VER" != "6.6" ]; then
@@ -238,7 +236,6 @@ jobs:
         CONFIG_PACKAGE_luci-lib-docker=y' >> .config
         fi
         make defconfig
-        ls customfeeds/packages/net/pdnsd-alt
         
     - name: Download Package
       if: inputs.task_setting != 'build-only'
