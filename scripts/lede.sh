@@ -86,7 +86,8 @@ rm -rf ../../customfeeds/packages/net/xray-core
 rm -rf ../../customfeeds/packages/net/xray-plugin
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages
+# git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages
+git clone --depth=1 -b patch-1 https://github.com/binge8/openwrt-passwall-packages
 
 # Add luci-app-netdata
 rm -rf ../../customfeeds/luci/applications/luci-app-netdata
