@@ -103,7 +103,7 @@ git clone --depth=1 https://github.com/sirpdboy/NetSpeedTest
 # Add luci-app-autotimeset
 rm -rf ../../customfeeds/luci/applications/luci-app-autotimeset
 git clone --depth=1 https://github.com/sirpdboy/luci-app-taskplan
-sed -i "s/\"control\"/\"system\"/g" luci-app-taskplan/luasrc/controller/taskplan.lua
+sed -i "s/\"control\"/\"system\"/g" luci-app-taskplan/luci-app-taskplan/luasrc/controller/taskplan.lua
 
 # Add mosdns
 rm -rf ../../customfeeds/packages/net/mosdns
