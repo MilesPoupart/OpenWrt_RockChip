@@ -196,8 +196,10 @@ jobs:
     - name: MOD index file
       if: inputs.task_setting != 'build-only'
       run: |
-         cd $OPENWRTROOT/package/lean/autocore/files/arm
-         sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/OpenWrt_RockChip"><%:固件下载%></a></td></tr>' index.htm
+        cd $OPENWRTROOT/package/lean/autocore/files/arm
+        sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/OpenWrt_RockChip"><%:固件下载%></a></td></tr>' index.htm
+        cd $OPENWRTROOT/customfeeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
+        sed -i '/_('\''Load Average'\''),/i\\t\t\t_('\''Github'\''),           E('\''a'\'', { '\''href'\'': '\''https://github.com/MilesPoupart/OpenWrt_RockChip'\'' }, [ _('\''固件下载'\'') ]),' 10_system.js
 
     - name: Install Feeds
       if: inputs.task_setting != 'build-only'
