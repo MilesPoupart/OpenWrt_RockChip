@@ -45,11 +45,12 @@ on:
       luci_version:
         description: 'LuCI version'
         required: true
-        default: 'openwrt-23.05'
+        default: 'openwrt-24.10'
         type: choice
         options:
         - 'master'
         - 'openwrt-23.05'
+        - 'openwrt-24.10'
       use_machine:
         description: 'Machine'
         required: true
