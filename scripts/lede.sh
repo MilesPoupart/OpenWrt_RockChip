@@ -181,10 +181,10 @@ rm -rf ../../customfeeds/packages/net/lucky
 rm -rf ../../customfeeds/luci/applications/luci-app-lucky
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky
 
-# Add alist
-rm -rf ../../customfeeds/packages/net/alist
-rm -rf ../../customfeeds/luci/applications/luci-app-alist
-git clone --depth=1 https://github.com/sbwml/luci-app-alist
+# Add openlist
+rm -rf ../../customfeeds/packages/net/openlist
+rm -rf ../../customfeeds/luci/applications/luci-app-openlist
+git clone --depth=1 https://github.com/sbwml/luci-app-openlist
 
 # qbittorrent
 rm -rf ../../customfeeds/packages/net/qBittorrent
