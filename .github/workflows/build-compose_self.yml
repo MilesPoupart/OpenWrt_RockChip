@@ -45,7 +45,7 @@ on:
       luci_version:
         description: 'LuCI version'
         required: true
-        default: 'openwrt-24.10'
+        default: 'openwrt-23.05'
         type: choice
         options:
         - 'master'
