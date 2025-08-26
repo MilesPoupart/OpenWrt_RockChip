@@ -23,7 +23,6 @@ friendlyarm_nanopi-r5c
 - 用户名：`root` 密码：`password` 管理IP：`192.168.2.1`（R2S） `192.168.3.1`（R5C）
 - [下载地址](https://github.com/MilesPoupart/OpenWrt_RockChip/releases) 对应 Tag 标签内下载固件
 - 刷机方法请参考dn2刷机 [点这里查看](https://github.com/DHDAXCW/OpenWrt_RockChip/blob/master/data/emmc.md)
-- 电报交流群：https://t.me/DHDAXCW
 
 ### 固件特色
 1. 集成 iStore 应用商店，可根据自己需求自由安装所需插件
