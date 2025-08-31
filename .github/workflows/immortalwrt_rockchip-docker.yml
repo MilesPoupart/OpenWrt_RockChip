@@ -1,8 +1,8 @@
 name: immortalwrt_rockchip_docker
 
 on:
-  schedule:
-    - cron: 0 16 * * *
+  # schedule:
+  #   - cron: 0 16 * * *
   workflow_dispatch:
 
 env:
