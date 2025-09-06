@@ -26,12 +26,24 @@ function github_partial_clone() {
 
     mkdir -p "$saved_dir"
 
-    if [ ! -d "${clone_dir}/${repository_name}" ]; then
-        git clone --depth=1 ${branch_option} "${url_prefix}${author_name}/${repository_name}.git" "${clone_dir}/${repository_name}"
+    # Create author-specific directory to avoid conflicts between different authors with same repo names
+    local repo_path="${clone_dir}/${author_name}/${repository_name}"
+    
+    # Only clone if repository doesn't exist
+    if [ ! -d "$repo_path" ]; then
+        echo "Cloning ${author_name}/${repository_name} for the first time..."
+        mkdir -p "${clone_dir}/${author_name}"
+        git clone --depth=1 ${branch_option} "${url_prefix}${author_name}/${repository_name}.git" "$repo_path"
+    else
+        echo "Reusing existing ${author_name}/${repository_name} repository..."
     fi
 
-    mv "${clone_dir}/${repository_name}/${required_dir}/"* "$saved_dir"
-    rm -rf "${clone_dir}/${repository_name}"
+    # Copy (not move) files to preserve the repository for future use
+    if [ -d "${repo_path}/${required_dir}" ]; then
+        cp -r "${repo_path}/${required_dir}/"* "$saved_dir/"
+    else
+        echo "Warning: Directory ${required_dir} not found in ${author_name}/${repository_name}"
+    fi
 }
 
 # Clone community packages to package/community
@@ -40,7 +52,17 @@ cp -f "$GITHUB_WORKSPACE/80_mount_root" package/base-files/files/lib/preinit/80_
 
 # Gloang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
+
+# Docker ecosystem
+rm -rf feeds/packages/utils/docker
+git clone --depth=1 https://github.com/sbwml/packages_utils_docker.git feeds/packages/utils/docker
+rm -rf feeds/packages/utils/dockerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd.git feeds/packages/utils/dockerd
+rm -rf feeds/packages/utils/runc
+git clone --depth=1 https://github.com/sbwml/packages_utils_runc.git feeds/packages/utils/runc
+rm -rf feeds/packages/utils/containerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_containerd.git feeds/packages/utils/containerd
 
 mkdir -p package/community
 pushd package/community
@@ -58,6 +80,7 @@ rm -rf openwrt-package/verysync
 rm -rf openwrt-package/luci-app-verysync
 rm -rf openwrt-package/luci-app-softethervpn
 rm -rf openwrt-package/luci-app-ramfree
+rm -rf openwrt-package/luci-app-nginx-pingos
 
 # Add luci-app-irqbalance by QiuSimons https://github.com/QiuSimons/OpenWrt-Add
 github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalance luci-app-irqbalance
@@ -72,6 +95,7 @@ rm -rf ../../customfeeds/packages/net/hysteria
 rm -rf ../../customfeeds/packages/net/ipt2socks
 rm -rf ../../customfeeds/packages/net/microsocks
 rm -rf ../../customfeeds/packages/net/naiveproxy
+rm -rf ../../customfeeds/packages/net/shadow-tls
 rm -rf ../../customfeeds/packages/net/shadowsocks-libev
 rm -rf ../../customfeeds/packages/net/shadowsocks-rust
 rm -rf ../../customfeeds/packages/net/shadowsocksr-libev
@@ -88,17 +112,13 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages
 
-# Add luci-app-netdata
-rm -rf ../../customfeeds/luci/applications/luci-app-netdata
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
-
-# Add luci-app-partexp
-rm -rf ../../customfeeds/luci/applications/luci-app-partexp
-git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp
-
 # Add luci-app-netspeedtest
+rm -rf ../../customfeeds/packages/net/speedtest-cli
 rm -rf ../../customfeeds/luci/applications/luci-app-netspeedtest
-git clone --depth=1 https://github.com/sirpdboy/NetSpeedTest
+git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest
+rm -rf luci-app-netspeedtest/homebox/Makefile
+wget -O luci-app-netspeedtest/homebox/Makefile https://raw.githubusercontent.com/MilesPoupart/homebox/master/OpenWrt-Makefile
+sed -i.backup 's|/usr/bin/homebox >> |/usr/bin/homebox serve --port 3300 --host 0.0.0.0 >> |' luci-app-netspeedtest/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/homebox.js
 
 # Add luci-app-autotimeset
 rm -rf ../../customfeeds/luci/applications/luci-app-autotimeset
@@ -211,8 +231,12 @@ git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git
 rm -rf ../../customfeeds/luci/applications/luci-app-wolplus
 github_partial_clone sundaqiang openwrt-packages use_default_branch luci-app-wolplus luci-app-wolplus
 
-# Add luci-app-poweroff
-git clone --depth=1 https://github.com/esirplayground/luci-app-poweroff
+# Add luci-app-poweroffdevice
+git clone --depth=1 https://github.com/sirpdboy/luci-app-poweroffdevice
+
+# Add bandix
+git clone --depth=1 https://github.com/timsaya/openwrt-bandix
+git clone --depth=1 https://github.com/timsaya/luci-app-bandix
 
 # Add OpenAppFilter
 git clone --depth=1 https://github.com/destan19/OpenAppFilter
@@ -232,8 +256,6 @@ find "$BASE_DIR" -type d -path "*/po/zh-cn" | while IFS= read -r zh_cn_dir; do
     
     # 定义 zh_Hans 目录的路径
     zh_Hans_dir="zh_Hans"
-    
-    echo "处理目录: $po_dir"
 
     # 使用 pushd 进入 po 目录
     pushd "$po_dir" > /dev/null
@@ -247,26 +269,19 @@ find "$BASE_DIR" -type d -path "*/po/zh-cn" | while IFS= read -r zh_cn_dir; do
         # 创建指向 zh-cn 的软链接 zh_Hans
         ln -s "zh-cn" "$zh_Hans_dir"
         if [ $? -eq 0 ]; then
-            echo "成功创建软链接: $po_dir/$zh_Hans_dir -> zh-cn"
+            echo "✅ 创建软链接: $po_dir/$zh_Hans_dir -> zh-cn"
         else
-            echo "错误: 无法创建软链接: $po_dir/$zh_Hans_dir"
+            echo "❌ 错误: 无法创建软链接: $po_dir/$zh_Hans_dir"
         fi
-    else
-        echo "已存在: $po_dir/$zh_Hans_dir，不做任何操作。"
     fi
 
     # 使用 popd 返回原工作目录
     popd > /dev/null
     if [ $? -ne 0 ]; then
-        echo "错误: 无法返回到原工作目录。"
+        echo "❌ 错误: 无法返回到原工作目录"
         exit 1
     fi
-
-    echo "完成处理目录: $po_dir"
-    echo "----------------------------------------"
 done
-
-echo "所有目录处理完毕。"
 
 popd
 
@@ -298,3 +313,12 @@ popd
 
 # Change default shell to zsh
 sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
+
+# Cleanup function - uncomment if you want to clean up cloned repositories after build
+cleanup_clone_dir() {
+    echo "Cleaning up temporary clone directory..."
+    rm -rf "$clone_dir"
+}
+
+# Uncomment the following line to enable automatic cleanup
+cleanup_clone_dir
