@@ -77,7 +77,7 @@ clone_and_cleanup "packages/net/adguardhome" "immortalwrt" "packages" "use_defau
 
 # Replace luci-app-zerotier
 clone_and_cleanup "luci/applications/luci-app-zerotier" "immortalwrt" "luci" "use_default_branch" "applications/luci-app-zerotier" "luci/applications/luci-app-zerotier"
-# clone_and_cleanup "packages/net/zerotier" "immortalwrt" "packages" "use_default_branch" "net/zerotier" "packages/net/zerotier"
+clone_and_cleanup "packages/net/zerotier" "immortalwrt" "packages" "use_default_branch" "net/zerotier" "packages/net/zerotier"
 
 # add missing packages
 clone_and_cleanup "luci/applications/luci-app-wireguard" "MilesPoupart" "luci" "master" "applications/luci-app-wireguard" "luci/applications/luci-app-wireguard"
