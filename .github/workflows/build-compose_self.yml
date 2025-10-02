@@ -167,7 +167,7 @@ jobs:
         git clone --depth=1 -b ${{ inputs.openwrt_branch }} https://github.com/immortalwrt/packages customfeeds/packages
         git clone --depth=1 -b ${{ inputs.openwrt_branch }} https://github.com/immortalwrt/luci customfeeds/luci
         chmod +x ../scripts/*.sh
-        ../scripts/hook-feeds.sh
+        ../scripts/feeds_settings.sh
 
     - name: MOD index file
       if: inputs.task_setting != 'build-only'
