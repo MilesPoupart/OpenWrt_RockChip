@@ -12,38 +12,17 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      lede_source:
-        description: 'LEDE source'
+      openwrt_source:
+        description: 'OpenWrt source'
         required: true
-        default: coolsnowwolf/lede
+        default: immortalwrt/immortalwrt
         type: choice
         options:
-        - DHDAXCW/lede-rockchip
-        - MilesPoupart/lede-rockchip
-        - coolsnowwolf/lede
-        - MilesPoupart/lede
-      compile_device:
-        description: 'device'
-        required: true
-        default: r2s
-        type: choice
-        options:
-        - r2s
-        - r5c
-      kernel_version:
-          description: 'Linux kernel version'
-          required: true
-          default: '6.12'
-          type: choice
-          options:
-          - '6.12'
-          - '6.6'
-          - '6.1'
-          - '5.15'
-          - '5.10'
-          - '5.4'
-      luci_version:
-        description: 'LuCI version'
+        - immortalwrt/immortalwrt
+        - DHDAXCW/immortalwrt
+        - MilesPoupart/immortalwrt
+      openwrt_branch:
+        description: 'OpenWrt branch'
         required: true
         default: 'openwrt-24.10'
         type: choice
@@ -51,6 +30,14 @@ on:
         - 'master'
         - 'openwrt-23.05'
         - 'openwrt-24.10'
+      compile_device:
+        description: 'device'
+        required: true
+        default: r5c
+        type: choice
+        options:
+        - r2s
+        - r5c
       use_machine:
         description: 'Machine'
         required: true
@@ -62,19 +49,11 @@ on:
       compile_version:
         description: 'Version'
         required: true
-        default: lite
+        default: docker
         type: choice
         options:
-        - lite
-        - full
-      docker_contain:
-        description: 'Docker'
-        required: true
-        default: 'docker'
-        type: choice
-        options:
-          - 'docker'
-          - 'common'
+        - docker
+        - common
       task_setting:
         description: 'Task Settings'
         required: true
@@ -90,17 +69,13 @@ on:
   #   types: started
 
 env:
-  REPO_URL: https://github.com/${{ inputs.lede_source }}
-  REPO_BRANCH: stable
-  CONFIG_FILE: configs/lede/${{ inputs.compile_version }}.config
-  DIY_SH: scripts/lede.sh
+  REPO_URL: https://github.com/${{ inputs.openwrt_source }}
+  CONFIG_FILE: configs/immortal/immortal.config
+  DIY_SH: scripts/immortal.sh
   DIY_DEV_SH: scripts/${{ inputs.compile_device }}.sh
-  KMODS_IN_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  IMAGE: milespoupart/action-openwrt-cache:oprk_${{ inputs.compile_device }}_${{ inputs.docker_contain }}_${{ inputs.compile_version }}
-  COMMIT_ID: ${{ vars.COMMIT_ID }}
-  KERNEL_VER: ${{ inputs.kernel_version }}
+  IMAGE: milespoupart/action-openwrt-cache:x86p2_${{ inputs.compile_version }}
 
 jobs:
 
@@ -112,16 +87,16 @@ jobs:
     steps:
     - name: Show choice
       run: |
-        echo "LEDE Source=${{ inputs.lede_source }}"
-        echo "Compile Device=${{ inputs.compile_device}}"
-        echo "LuCI Version=${{ inputs.luci_version}}"
+        echo "OpenWrt Source=${{ inputs.openwrt_source }}"
+        echo "OpenWrt Branch=${{ inputs.openwrt_branch }}"
         echo "Compile Version=${{ inputs.compile_version }}"
-        echo "Tsak settings=${{ inputs.task_setting }}"
+        echo "Task settings=${{ inputs.task_setting }}"
         echo "Compile machine=${{ inputs.use_machine }}"
+        echo "Compile device=${{ inputs.compile_device }}"
 
     - name: Checkout
       if: inputs.task_setting != 'build-only'
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Initialization Environment
       if: inputs.task_setting != 'build-only'
@@ -189,16 +164,14 @@ jobs:
         echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
         echo "OPENWRTROOT=$PWD" >> $GITHUB_OUTPUT
         mkdir customfeeds
-        git clone --depth=1 https://github.com/MilesPoupart/packages customfeeds/packages
-        git clone --depth=1 -b ${{ inputs.luci_version }} https://github.com/MilesPoupart/luci customfeeds/luci
+        git clone --depth=1 -b ${{ inputs.openwrt_branch }} https://github.com/immortalwrt/packages customfeeds/packages
+        git clone --depth=1 -b ${{ inputs.openwrt_branch }} https://github.com/immortalwrt/luci customfeeds/luci
         chmod +x ../scripts/*.sh
         ../scripts/hook-feeds.sh
 
     - name: MOD index file
       if: inputs.task_setting != 'build-only'
       run: |
-        cd $OPENWRTROOT/package/lean/autocore/files/arm
-        sed -i '/Load Average/i\\t\t<tr><td width="33%"><%:Github %></td><td><a href="https://github.com/MilesPoupart/OpenWrt_RockChip"><%:固件下载%></a></td></tr>' index.htm
         cd $OPENWRTROOT/customfeeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
         sed -i '/_('\''Load Average'\''),/i\\t\t\t_('\''Github'\''),           E('\''a'\'', { '\''href'\'': '\''https://github.com/MilesPoupart/OpenWrt_RockChip'\'' }, [ _('\''固件下载'\'') ]),' 10_system.js
 
@@ -218,25 +191,21 @@ jobs:
         cd $OPENWRTROOT
         ../$DIY_SH
         ../$DIY_DEV_SH
-        if [ "$KERNEL_VER" != "6.12" ]; then
-          sed -i "s/6.12/$KERNEL_VER/g" target/linux/rockchip/Makefile
-        fi
-        cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
         sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
-        if [ ${{ inputs.docker_contain }} == "docker" ]; then
+        if [ "${{ inputs.compile_version }}" == "docker" ]; then
             echo '
         CONFIG_DOCKER_CGROUP_OPTIONS=y
-        CONFIG_DOCKER_NET_ENCRYPT=y
         CONFIG_DOCKER_NET_MACVLAN=y
-        CONFIG_DOCKER_NET_OVERLAY=y
-        CONFIG_DOCKER_NET_TFTP=y
-        CONFIG_DOCKER_OPTIONAL_FEATURES=y
-        CONFIG_DOCKER_STO_BTRFS=y
         CONFIG_DOCKER_STO_EXT4=y
+        CONFIG_PACKAGE_docker=y
+        CONFIG_PACKAGE_docker-compose=y
+        CONFIG_PACKAGE_dockerd=y
         CONFIG_PACKAGE_luci-app-dockerman=y
-        CONFIG_PACKAGE_luci-lib-docker=y' >> .config
+        CONFIG_PACKAGE_luci-i18n-dockerman-zh-cn=y
+        CONFIG_PACKAGE_luci-lib-docker=y
+        ' >> .config        
         fi
         make defconfig
         
@@ -294,7 +263,7 @@ jobs:
         ulimit -a
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: Pull Image
       run: |
@@ -417,39 +386,25 @@ jobs:
         cd $OPENWRTROOT
         mkdir -p files/etc/uci-defaults/
         cp ../scripts/init-settings.sh files/etc/uci-defaults/99-init-settings
-        mkdir -p files/etc/opkg
-        cp ../configs/opkg/distfeeds-packages-server.conf files/etc/opkg/distfeeds.conf.server
-        mkdir -p files/etc/opkg/keys
-        cp ../configs/opkg/1035ac73cc4e59e3 files/etc/opkg/keys/1035ac73cc4e59e3
-        if "$KMODS_IN_FIRMWARE" = 'true'
-        then
-            mkdir -p files/www/snapshots
-            cp -r bin/targets files/www/snapshots
-            cp ../configs/opkg/distfeeds-18.06-local.conf files/etc/opkg/distfeeds.conf
-        else
-            cp ../configs/opkg/distfeeds-18.06-remote.conf files/etc/opkg/distfeeds.conf
-        fi
-        cp files/etc/opkg/distfeeds.conf.server files/etc/opkg/distfeeds.conf.mirror
-        sed -i "s/http:\/\/192.168.123.100:2345\/snapshots/https:\/\/openwrt.cc\/snapshots\/$(date +"%Y-%m-%d")\/lean/g" files/etc/opkg/distfeeds.conf.mirror
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat openwrt-rockchip-armv8.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        kernelv=`cat immortalwrt-rockchip-armv8.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
-        mv openwrt-rockchip-armv8.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
-        # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
-        mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-config.buildinfo
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz
+        mv immortalwrt-rockchip-armv8.manifest ${{ inputs.compile_version }}-immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
+        # rm -rf immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
+        mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.compile_version }}-config.buildinfo
+        mv immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
+        mv immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz
         popd
         mkdir -p server/web/snapshots/targets/$TARGET/$SUBTARGET
         cp -r $OPENWRTROOT/bin/packages server/web/snapshots
         cp -r $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET/packages server/web/snapshots/targets/$TARGET/$SUBTARGET
         mv server packages-server
-        zip -qrm ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip packages-server
-        mv ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
+        zip -qrm ${{ inputs.compile_device }}-${{ inputs.compile_version }}-packages-server.zip packages-server
+        mv ${{ inputs.compile_device }}-${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
         make checksum
-        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-sha256sums
+        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_device }}-${{ inputs.compile_version }}-sha256sums
         echo "GENERATE_STATUS=success" >> $GITHUB_OUTPUT
 
         
@@ -457,13 +412,12 @@ jobs:
       id: tag
       if: steps.generate.outputs.GENERATE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-          echo "RELEASE_TAG=$(date +"%Y.%m.%d")-Lean-${{ inputs.compile_device }}-${{ inputs.kernel_version }}" >> $GITHUB_OUTPUT
+          echo "RELEASE_TAG=$(date +"%Y.%m.%d")-immortalwrt-${{ inputs.compile_device }}" >> $GITHUB_OUTPUT
           echo "RELEASE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo "本次编译的openwrt源：${{ inputs.lede_source }} (LuCI新版本)
+          echo "本次编译的openwrt源：${{ inputs.openwrt_source }}
                 后台地址：192.168.2.1(r2s)/192.168.3.1(r5c)
-                common/docker = 无docker/有docker
-                full/lite = 全插件/精简" >> release.txt
+                common/docker = 无docker/有docker" >> release.txt
           echo "RELEASE_STATUS=success" >> $GITHUB_OUTPUT
 
   UploadFirmware:
@@ -483,7 +437,7 @@ jobs:
         docker images
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@v2.2.1
+      uses: softprops/action-gh-release@v2
       if: needs.CompileFirmware.outputs.RELEASE_STATUS == 'success' && !cancelled() && env.UPLOAD_RELEASE == 'true'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -507,9 +461,3 @@ jobs:
           delete_tags: true
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Delete Artifacts
-      uses: geekyeggo/delete-artifact@v5
-      with:
-          name: |
-            bin-archive

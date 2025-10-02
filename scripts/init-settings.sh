@@ -15,9 +15,9 @@ uci set luci.main.mediaurlbase='/luci-static/argon'
 # 禁用ipv6前缀
 sed -i 's/^[^#].*option ula/#&/' /etc/config/network
 # Disable autostart by default for some packages
-cd /etc/rc.d
-rm -f S98udptools || true
-rm -f S99nft-qos || true
+# cd /etc/rc.d
+# rm -f S98udptools || true
+# rm -f S99nft-qos || true
 
 # Try to execute init.sh (if exists)
 
