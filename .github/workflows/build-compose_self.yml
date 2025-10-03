@@ -142,7 +142,7 @@ jobs:
       if: inputs.task_setting != 'build-only'
       run: |
         df -hT $PWD
-        git clone $REPO_URL openwrt
+        git clone -b ${{ inputs.openwrt_branch }} $REPO_URL openwrt
         # cd openwrt
         
     # - name: Reset Version
