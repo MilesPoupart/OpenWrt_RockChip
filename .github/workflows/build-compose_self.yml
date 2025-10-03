@@ -70,7 +70,7 @@ on:
       docker_contain:
         description: 'Docker'
         required: true
-        default: 'docker'
+        default: 'common'
         type: choice
         options:
           - 'docker'
