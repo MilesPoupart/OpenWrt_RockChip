@@ -75,7 +75,7 @@ env:
   DIY_DEV_SH: scripts/${{ inputs.compile_device }}.sh
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  IMAGE: milespoupart/action-openwrt-cache:x86p2_${{ inputs.compile_version }}
+  IMAGE: milespoupart/action-openwrt-cache:oprk_${{ inputs.compile_device }}_${{ inputs.compile_version }}
 
 jobs:
 
