@@ -389,7 +389,7 @@ jobs:
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat immortalwrt-rockchip-armv8.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        kernelv=`cat immortalwrt-x86-64-generic.manifest | grep 'kernel - ' | sed -n 's/kernel - \([0-9.]*\).*/\1/p'`
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
         mv immortalwrt-rockchip-armv8.manifest ${{ inputs.compile_version }}-immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
         # rm -rf immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
