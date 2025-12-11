@@ -85,7 +85,9 @@ clone_and_cleanup "luci/applications/luci-app-adbyby-plus" "MilesPoupart" "luci"
 
 # replace luci-app-smartdns
 rm -rf luci/applications/luci-app-smartdns
-git clone https://github.com/pymumu/luci-app-smartdns luci/applications/luci-app-smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns luci/applications/luci-app-smartdns
+rm -rf packages/net/smartdns
+git clone --depth=1 https://github.com/pymumu/openwrt-smartdns packages/net/smartdns
 
 popd
 
