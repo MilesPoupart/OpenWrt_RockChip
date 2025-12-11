@@ -30,6 +30,7 @@ on:
         - 'master'
         - 'openwrt-23.05'
         - 'openwrt-24.10'
+        - 'openwrt-25.12'
       compile_device:
         description: 'device'
         required: true
