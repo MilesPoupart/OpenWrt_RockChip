@@ -111,7 +111,8 @@ git clone --depth=1 https://github.com/sbwml/luci-app-mosdns
 
 # Add custom smartdns from MilesPoupart/packages
 rm -rf ../../customfeeds/packages/net/smartdns
-github_partial_clone MilesPoupart packages master net/smartdns ../../customfeeds/packages/net/smartdns
+git clone --depth=1 https://github.com/pymumu/openwrt-smartdns ../../customfeeds/packages/net/smartdns
+# github_partial_clone MilesPoupart packages master net/smartdns ../../customfeeds/packages/net/smartdns
 
 # Add zerotier
 rm -rf ../../customfeeds/packages/net/zerotier
