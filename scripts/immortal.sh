@@ -50,6 +50,11 @@ function github_partial_clone() {
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
+# Rust
+rm -rf feeds/packages/lang/rust
+# use https://github.com/coolsnowwolf/packages/tree/master/lang/rust
+github_partial_clone coolsnowwolf packages use_default_branch lang/rust feeds/packages/lang/rust
+
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
 rm -rf feeds/packages/utils/dockerd
@@ -144,9 +149,9 @@ rm -rf ../../customfeeds/packages/net/v2ray-geodata
 rm -rf ../../customfeeds/packages/net/v2ray-plugin
 rm -rf ../../customfeeds/packages/net/xray-core
 rm -rf ../../customfeeds/packages/net/xray-plugin
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall2
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall-packages
 
 # Add other applications
 rm -rf ../../customfeeds/luci/applications/luci-app-onliner
