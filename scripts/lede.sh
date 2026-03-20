@@ -52,7 +52,7 @@ cp -f "$GITHUB_WORKSPACE/80_mount_root" package/base-files/files/lib/preinit/80_
 
 # Gloang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
@@ -113,12 +113,10 @@ git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall2
 git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall-packages
 
 # Add luci-app-netspeedtest
-rm -rf ../../customfeeds/packages/net/speedtest-cli
+rm -rf ../../customfeeds/packages/net/ookla-speedtest
+rm -rf ../../customfeeds/packages/net/homebox
 rm -rf ../../customfeeds/luci/applications/luci-app-netspeedtest
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest
-rm -rf luci-app-netspeedtest/homebox/Makefile
-wget -O luci-app-netspeedtest/homebox/Makefile https://raw.githubusercontent.com/MilesPoupart/homebox/master/OpenWrt-Makefile
-sed -i.backup 's|/usr/bin/homebox >> |/usr/bin/homebox serve --port 3300 --host 0.0.0.0 >> |' luci-app-netspeedtest/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/homebox.js
+git clone --depth=1 https://github.com/sirpdboy/netspeedtest
 
 # Add luci-app-autotimeset
 rm -rf ../../customfeeds/luci/applications/luci-app-autotimeset
