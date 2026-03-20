@@ -48,12 +48,7 @@ function github_partial_clone() {
 
 # Gloang
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
-
-# Rust
-rm -rf feeds/packages/lang/rust
-# use https://github.com/coolsnowwolf/packages/tree/master/lang/rust
-github_partial_clone coolsnowwolf packages use_default_branch lang/rust feeds/packages/lang/rust
+git clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
