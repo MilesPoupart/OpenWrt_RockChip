@@ -118,10 +118,12 @@ rm -rf ../../customfeeds/packages/net/homebox
 rm -rf ../../customfeeds/luci/applications/luci-app-netspeedtest
 git clone --depth=1 https://github.com/sirpdboy/netspeedtest
 
-# Add luci-app-autotimeset
-rm -rf ../../customfeeds/luci/applications/luci-app-autotimeset
+# Add luci-app-taskplan
+rm -rf ../../customfeeds/luci/applications/luci-app-taskplan
 git clone --depth=1 https://github.com/sirpdboy/luci-app-taskplan
-sed -i "s/\"control\"/\"system\"/g" luci-app-taskplan/luci-app-taskplan/luasrc/controller/taskplan.lua
+# 移除control菜单定义，只保留taskplan项到system菜单下
+sed -i '/"admin\/control": {/,/^[[:space:]]*},$/d' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
+sed -i 's/"admin\/control\/taskplan"/"admin\/system\/taskplan"/g' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
 
 # Add mosdns
 rm -rf ../../customfeeds/packages/net/mosdns
