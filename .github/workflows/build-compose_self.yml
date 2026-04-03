@@ -203,13 +203,6 @@ jobs:
         cd $OPENWRTROOT/customfeeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
         sed -i '/_('\''Load Average'\''),/i\\t\t\t_('\''Github'\''),           E('\''a'\'', { '\''href'\'': '\''https://github.com/MilesPoupart/OpenWrt_RockChip'\'' }, [ _('\''固件下载'\'') ]),' 10_system.js
 
-    - name: Install Feeds
-      if: inputs.task_setting != 'build-only'
-      run: |
-        cd $OPENWRTROOT
-        cat feeds.conf.default
-        ./scripts/feeds install -a
-        
     - name: Load Custom Configuration
       if: inputs.task_setting != 'build-only'
       run: |
@@ -225,6 +218,7 @@ jobs:
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
+        ./scripts/feeds update -a && ./scripts/feeds install -a
         sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
             echo '
