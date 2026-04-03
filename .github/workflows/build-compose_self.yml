@@ -24,7 +24,7 @@ on:
       openwrt_branch:
         description: 'OpenWrt branch'
         required: true
-        default: 'openwrt-24.10'
+        default: 'openwrt-25.12'
         type: choice
         options:
         - 'master'
@@ -153,6 +153,12 @@ jobs:
         df -hT $PWD
         git clone -b ${{ inputs.openwrt_branch }} $REPO_URL openwrt
         # cd openwrt
+
+    - name: Apply Download Patch
+      if: inputs.task_setting != 'build-only' && inputs.openwrt_branch == 'openwrt-25.12'
+      run: |
+        cd openwrt
+        patch -p1 < ../immortalwrt/001-download-revert-mirror-hash-check.patch
         
     # - name: Reset Version
     #   if: inputs.task_setting != 'build-only'
@@ -184,12 +190,6 @@ jobs:
         cd $OPENWRTROOT/customfeeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
         sed -i '/_('\''Load Average'\''),/i\\t\t\t_('\''Github'\''),           E('\''a'\'', { '\''href'\'': '\''https://github.com/MilesPoupart/OpenWrt_RockChip'\'' }, [ _('\''固件下载'\'') ]),' 10_system.js
 
-    - name: Install Feeds
-      if: inputs.task_setting != 'build-only'
-      run: |
-        cd $OPENWRTROOT
-        cat feeds.conf.default
-        ./scripts/feeds install -a
         
     - name: Load Custom Configuration
       if: inputs.task_setting != 'build-only'
@@ -202,6 +202,7 @@ jobs:
         ../$DIY_DEV_SH
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
+        ./scripts/feeds update -a && ./scripts/feeds install -a
         sed -i '/CONFIG_TARGET_MULTI_PROFILE=y/a\CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         if [ "${{ inputs.compile_version }}" == "docker" ]; then
             echo '
@@ -217,7 +218,51 @@ jobs:
         ' >> .config        
         fi
         make defconfig
-        
+
+    - name: Fix LuCI Package Versions (APK Compatibility)
+      if: inputs.task_setting != 'build-only' && inputs.openwrt_branch == 'openwrt-25.12'
+      run: |
+        cd $OPENWRTROOT
+        # Fix APK version format incompatibility for LuCI packages
+        # APK requires version format: X.Y.Z or X.Y.Z-rN
+        # The main version part (before -r) must NOT contain hyphens
+        for makefile in $(find package/community -name Makefile -type f); do
+          if grep -q "include.*feeds/luci/luci.mk" "$makefile" 2>/dev/null; then
+            changed=false
+
+            # Get current PKG_VERSION
+            version=$(grep "^PKG_VERSION:=" "$makefile" | head -1 | sed 's/PKG_VERSION:=//' | tr -d ' ')
+            
+            if [ -n "$version" ]; then
+              # Case 1: PKG_VERSION is already X.Y.Z-rN format - VALID, don't touch it
+              # e.g., 3.2.0-r5 is valid APK version
+              if echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-r[0-9]+$'; then
+                echo "  PKG_VERSION $version is already valid APK format, skipping: $makefile"
+              
+              # Case 2: PKG_VERSION contains hyphens but NOT in -rN format
+              # e.g., 1.0-beta1, 5.8.0-20240106 -> replace hyphens with dots
+              elif echo "$version" | grep -q '-'; then
+                new_version="${version//-/.}"
+                sed -i "s|^PKG_VERSION:=.*|PKG_VERSION:=$new_version|" "$makefile"
+                echo "  Fixed PKG_VERSION: $version -> $new_version in $makefile"
+                changed=true
+              fi
+            fi
+
+            # Fix manual $(PKG_VERSION)-$(PKG_RELEASE) -> $(PKG_VERSION)-r$(PKG_RELEASE)
+            # luci.mk line 161 already uses -r format, but some custom Makefiles may not
+            if grep -q '\$(PKG_VERSION)-\$(PKG_RELEASE)' "$makefile" 2>/dev/null; then
+              sed -i 's/\$(PKG_VERSION)-\$(PKG_RELEASE)/$(PKG_VERSION)-r$(PKG_RELEASE)/g' "$makefile"
+              echo "  Fixed version concatenation: added -r prefix in $makefile"
+              changed=true
+            fi
+
+            if [ "$changed" = true ]; then
+              echo "Patched: $makefile"
+            fi
+          fi
+        done
+
     - name: Download Package
       if: inputs.task_setting != 'build-only'
       id: package

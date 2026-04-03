@@ -17,6 +17,7 @@ function github_partial_clone() {
     local branch_name="$3"
     local required_dir="$4"
     local saved_dir="$5"
+    local reset_commit="$6"
     local url_prefix="https://github.com/"
     
     local branch_option=""
@@ -29,13 +30,36 @@ function github_partial_clone() {
     # Create author-specific directory to avoid conflicts between different authors with same repo names
     local repo_path="${clone_dir}/${author_name}/${repository_name}"
     
+    # Determine if we need full history (when reset_commit is specified)
+    local depth_option="--depth=1"
+    if [ -n "$reset_commit" ]; then
+        depth_option=""
+    fi
+    
     # Only clone if repository doesn't exist
     if [ ! -d "$repo_path" ]; then
         echo "Cloning ${author_name}/${repository_name} for the first time..."
         mkdir -p "${clone_dir}/${author_name}"
-        git clone --depth=1 ${branch_option} "${url_prefix}${author_name}/${repository_name}.git" "$repo_path"
+        git clone ${depth_option} ${branch_option} "${url_prefix}${author_name}/${repository_name}.git" "$repo_path"
     else
         echo "Reusing existing ${author_name}/${repository_name} repository..."
+        # If reset_commit is specified and repo is shallow, unshallow it
+        if [ -n "$reset_commit" ]; then
+            pushd "$repo_path" > /dev/null
+            if git rev-parse --is-shallow-repository | grep -q true; then
+                echo "Repository is shallow, fetching full history for reset..."
+                git fetch --unshallow
+            fi
+            popd > /dev/null
+        fi
+    fi
+
+    # Reset to specific commit if provided
+    if [ -n "$reset_commit" ]; then
+        echo "Resetting ${author_name}/${repository_name} to commit ${reset_commit}..."
+        pushd "$repo_path" > /dev/null
+        git reset --hard "$reset_commit"
+        popd > /dev/null
     fi
 
     # Copy (not move) files to preserve the repository for future use
@@ -102,6 +126,9 @@ rm -rf ../../customfeeds/packages/net/ookla-speedtest
 rm -rf ../../customfeeds/packages/net/homebox
 rm -rf ../../customfeeds/luci/applications/luci-app-netspeedtest
 git clone --depth=1 https://github.com/sirpdboy/netspeedtest
+# rm -rf netspeedtest/homebox/Makefile
+# wget -O netspeedtest/homebox/Makefile https://raw.githubusercontent.com/MilesPoupart/homebox/master/OpenWrt-Makefile
+# sed -i.backup 's|/usr/bin/homebox >> |/usr/bin/homebox serve --port 3300 --host 0.0.0.0 >> |' netspeedtest/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/homebox.js
 
 # Add luci-app-taskplan
 rm -rf ../../customfeeds/luci/applications/luci-app-taskplan
@@ -124,6 +151,10 @@ git clone --depth=1 https://github.com/pymumu/openwrt-smartdns ../../customfeeds
 # Add zerotier
 rm -rf ../../customfeeds/packages/net/zerotier
 github_partial_clone immortalwrt packages master net/zerotier ../../customfeeds/packages/net/zerotier
+
+# Add luci-app-ustreamer
+rm -rf ../../customfeeds/luci/applications/luci-app-ustreamer
+github_partial_clone immortalwrt luci master applications/luci-app-ustreamer ../../customfeeds/luci/applications/luci-app-ustreamer
 
 # Add luci-app-ssr-plus
 git clone --depth=1 https://github.com/fw876/helloworld
@@ -173,7 +204,7 @@ github_partial_clone linkease nas-packages use_default_branch multimedia/ffmpeg-
 
 # Add OpenClash
 rm -rf ../../customfeeds/luci/applications/luci-app-openclash
-github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash
+github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash 79dee90996b99dbac377c220914b0d73b2941e0d
 
 # add wrtbwmon
 github_partial_clone brvphoenix luci-app-wrtbwmon use_default_branch luci-app-wrtbwmon luci-app-wrtbwmon
