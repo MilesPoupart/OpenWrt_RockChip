@@ -74,13 +74,20 @@ git clone https://github.com/0x676e67/luci-app-watchcat-plus.git
 # Add Lienol's Packages
 git clone --depth=1 https://github.com/Lienol/openwrt-package
 rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
-rm -rf ../../customfeeds/luci/applications/luci-app-socat
 rm -rf ../../customfeeds/luci/applications/luci-app-ipsec-server
+rm -rf ../../customfeeds/luci/applications/luci-app-openvpn-server
 rm -rf openwrt-package/verysync
 rm -rf openwrt-package/luci-app-verysync
 rm -rf openwrt-package/luci-app-softethervpn
 rm -rf openwrt-package/luci-app-ramfree
 rm -rf openwrt-package/luci-app-nginx-pingos
+rm -rf openwrt-package/luci-app-socat
+# rm -rf openwrt-package/luci-app-socat/root/etc/config
+rm -rf openwrt-package/luci-app-openvpn-server/root/etc/config
+
+# Add luci-app-socat
+rm -rf ../../customfeeds/luci/applications/luci-app-socat
+github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-socat ../../customfeeds/luci/applications/luci-app-socat
 
 # Add luci-app-irqbalance by QiuSimons https://github.com/QiuSimons/OpenWrt-Add
 github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalance luci-app-irqbalance
