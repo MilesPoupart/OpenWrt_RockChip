@@ -232,6 +232,8 @@ rm -rf ../../customfeeds/luci/applications/luci-app-wolplus
 github_partial_clone sundaqiang openwrt-packages use_default_branch luci-app-wolplus luci-app-wolplus
 
 # Add OpenAppFilter
+rm -rf ../../customfeeds/luci/applications/luci-app-openappfilter
+rm -rf ../../customfeeds/packages/net/open-app-filter
 git clone --depth=1 https://github.com/destan19/OpenAppFilter
 
 # Add luci-aliyundrive-webdav
