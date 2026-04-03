@@ -239,6 +239,8 @@ git clone --depth=1 https://github.com/timsaya/openwrt-bandix
 git clone --depth=1 https://github.com/timsaya/luci-app-bandix
 
 # Add OpenAppFilter
+rm -rf ../../customfeeds/luci/applications/luci-app-openappfilter
+rm -rf ../../customfeeds/packages/net/open-app-filter
 git clone --depth=1 https://github.com/destan19/OpenAppFilter
 
 # Add luci-aliyundrive-webdav
