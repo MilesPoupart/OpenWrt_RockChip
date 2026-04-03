@@ -77,18 +77,14 @@ git clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/gola
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
 rm -rf feeds/packages/utils/dockerd
-# rm -rf feeds/packages/utils/docker-compose
 rm -rf feeds/packages/utils/runc
 rm -rf feeds/packages/utils/containerd
+rm -rf feeds/luci/applications/luci-app-dockerman
 git clone --depth=1 https://github.com/sbwml/packages_utils_docker.git feeds/packages/utils/docker
 git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd.git feeds/packages/utils/dockerd
 git clone --depth=1 https://github.com/sbwml/packages_utils_runc.git feeds/packages/utils/runc
 git clone --depth=1 https://github.com/sbwml/packages_utils_containerd.git feeds/packages/utils/containerd
-# github_partial_clone MilesPoupart packages use_default_branch utils/docker feeds/packages/utils/docker
-# github_partial_clone MilesPoupart packages use_default_branch utils/dockerd feeds/packages/utils/dockerd
-# github_partial_clone MilesPoupart packages use_default_branch utils/docker-compose feeds/packages/utils/docker-compose
-# github_partial_clone MilesPoupart packages use_default_branch utils/runc feeds/packages/utils/runc
-# github_partial_clone MilesPoupart packages use_default_branch utils/containerd feeds/packages/utils/containerd
+git clone --depth=1 https://github.com/sbwml/luci-app-dockerman.git feeds/luci/applications/luci-app-dockerman
 
 mkdir -p package/community
 pushd package/community
