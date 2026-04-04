@@ -113,7 +113,7 @@ rm -rf openwrt-package/luci-app-openvpn-server/root/etc/config
 
 # Add luci-app-socat
 rm -rf ../../customfeeds/luci/applications/luci-app-socat
-github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-socat ../../customfeeds/luci/applications/luci-app-socat
+github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-socat luci-app-socat
 
 # Add luci-app-irqbalance by QiuSimons https://github.com/QiuSimons/OpenWrt-Add
 github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalance luci-app-irqbalance
