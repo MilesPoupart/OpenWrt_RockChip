@@ -443,9 +443,9 @@ jobs:
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat immortalwrt-rockchip-armv8.manifest | grep 'kernel - ' | sed -n 's/kernel - \([0-9.]*\).*/\1/p'`
+        kernelv=`cat immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest | grep 'kernel - ' | sed -n 's/kernel - \([0-9.]*\).*/\1/p'`
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
-        mv immortalwrt-rockchip-armv8.manifest ${{ inputs.compile_version }}-immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
+        mv immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest ${{ inputs.compile_version }}-immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
         # rm -rf immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
         mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.compile_version }}-config.buildinfo
         mv immortalwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
