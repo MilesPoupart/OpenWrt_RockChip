@@ -210,6 +210,7 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRTROOT/.config
         chmod +x scripts/*.sh
         cd $OPENWRTROOT
+        sed -i '/CONFIG_TARGET_rockchip_armv8=y/a\CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         ../$DIY_SH
         ../$DIY_DEV_SH
         if [ "$KERNEL_VER" != "6.12" ]; then
@@ -219,7 +220,6 @@ jobs:
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
         ./scripts/feeds update -a && ./scripts/feeds install -a
-        sed -i '/CONFIG_TARGET_rockchip_armv8=y/a\CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
             echo '
         CONFIG_DOCKER_CGROUP_OPTIONS=y
