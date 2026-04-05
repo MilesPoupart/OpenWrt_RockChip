@@ -88,11 +88,10 @@ git clone --depth=1 https://github.com/sbwml/packages_utils_docker.git feeds/pac
 git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd.git feeds/packages/utils/dockerd
 git clone --depth=1 https://github.com/sbwml/packages_utils_runc.git feeds/packages/utils/runc
 git clone --depth=1 https://github.com/sbwml/packages_utils_containerd.git feeds/packages/utils/containerd
+git clone --depth=1 https://github.com/sbwml/luci-app-dockerman.git feeds/luci/applications/luci-app-dockerman
 
 mkdir -p package/community
 pushd package/community
-
-git clone --depth=1 -b openwrt-24.10 https://github.com/sbwml/luci-app-dockerman.git
 
 # Add luci-app-watchcat-plus
 rm -rf ../../customfeeds/luci/applications/luci-app-watchcat-plus
@@ -263,7 +262,8 @@ git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git
 
 # Add zerotier
 rm -rf ../../customfeeds/packages/net/zerotier
-git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
+git clone --depth=1 https://github.com/MilesPoupart/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
+# git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
 
 # Add luci-app-ustreamer
 rm -rf ../../customfeeds/luci/applications/luci-app-ustreamer
