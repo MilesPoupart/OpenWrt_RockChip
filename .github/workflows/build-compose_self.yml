@@ -211,6 +211,14 @@ jobs:
         chmod +x scripts/*.sh
         cd $OPENWRTROOT
         sed -i '/CONFIG_TARGET_rockchip_armv8=y/a\CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
+        # Fix: kmod-drm-panfrost missing +kmod-drm-shmem-helper dependency
+        if grep -q 'KernelPackage/drm-panfrost' package/kernel/linux/modules/video.mk && \
+           ! grep -A5 'KernelPackage/drm-panfrost' package/kernel/linux/modules/video.mk | grep -q 'kmod-drm-shmem-helper'; then
+          sed -i '/^define KernelPackage\/drm-panfrost/,/^endef/ s/+kmod-drm-sched$/+kmod-drm-sched +kmod-drm-shmem-helper/' package/kernel/linux/modules/video.mk
+          echo ">>> Patched: added +kmod-drm-shmem-helper to kmod-drm-panfrost DEPENDS"
+        else
+          echo ">>> kmod-drm-panfrost already has +kmod-drm-shmem-helper or entry not found, skip"
+        fi
         ../$DIY_SH
         ../$DIY_DEV_SH
         if [ "$KERNEL_VER" != "6.12" ]; then
