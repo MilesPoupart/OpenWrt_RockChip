@@ -113,6 +113,8 @@ rm -rf openwrt-package/luci-app-openvpn-server/root/etc/config
 # Add luci-app-socat
 rm -rf ../../customfeeds/luci/applications/luci-app-socat
 github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-socat luci-app-socat
+# Move socat from services to network menu
+sed -i 's|admin/services/socat|admin/network/socat|g' luci-app-socat/root/usr/share/luci/menu.d/luci-app-socat.json
 
 # Add luci-app-irqbalance by QiuSimons https://github.com/QiuSimons/OpenWrt-Add
 github_partial_clone QiuSimons OpenWrt-Add use_default_branch luci-app-irqbalance luci-app-irqbalance
@@ -241,6 +243,8 @@ rm -rf ../../customfeeds/luci/applications/luci-app-openlist
 rm -rf ../../customfeeds/packages/net/openlist2
 rm -rf ../../customfeeds/luci/applications/luci-app-openlist2
 git clone --depth=1 https://github.com/sbwml/luci-app-openlist2
+# Move openlist2 from services to nas menu
+sed -i 's|admin/services/openlist2|admin/nas/openlist2|g' luci-app-openlist2/luci-app-openlist2/root/usr/share/luci/menu.d/luci-app-openlist2.json
 
 # qbittorrent
 rm -rf ../../customfeeds/packages/net/qBittorrent
