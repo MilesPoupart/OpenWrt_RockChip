@@ -271,8 +271,10 @@ git clone --depth=1 https://github.com/MilesPoupart/feeds_packages_net_zerotier.
 # git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
 
 # Add luci-app-ustreamer
+rm -rf ../../customfeeds/packages/multimedia/ustreamer
 rm -rf ../../customfeeds/luci/applications/luci-app-ustreamer
 github_partial_clone immortalwrt luci master applications/luci-app-ustreamer ../../customfeeds/luci/applications/luci-app-ustreamer
+github_partial_clone immortalwrt packages master multimedia/ustreamer ../../customfeeds/packages/multimedia/ustreamer
 
 # Add luci-app-wolplus
 rm -rf ../../customfeeds/luci/applications/luci-app-wolplus
