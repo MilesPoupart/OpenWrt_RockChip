@@ -157,4 +157,4 @@ echo "src-link luci $luci_feed" >> feeds.conf.default
 # ./scripts/feeds install -d y -p istore luci-app-store
 
 # Update feeds
-./scripts/feeds update -a
+./scripts/feeds update -a && ./scripts/feeds install -a
