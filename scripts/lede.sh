@@ -170,7 +170,7 @@ git clone --depth=1 https://github.com/ysc3839/luci-proto-minieap
 
 # Add OpenClash
 rm -rf ../../customfeeds/luci/applications/luci-app-openclash
-github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash 79dee90996b99dbac377c220914b0d73b2941e0d
+github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash
 
 # Add ddnsto & linkease
 rm -rf ../../customfeeds/luci/applications/luci-app-ddnsto
