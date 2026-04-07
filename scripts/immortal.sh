@@ -191,7 +191,7 @@ github_partial_clone linkease nas-packages use_default_branch multimedia/ffmpeg-
 
 # Add OpenClash
 rm -rf ../../customfeeds/luci/applications/luci-app-openclash
-github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash 79dee90996b99dbac377c220914b0d73b2941e0d
+github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash
 
 # add wrtbwmon
 github_partial_clone brvphoenix luci-app-wrtbwmon use_default_branch luci-app-wrtbwmon luci-app-wrtbwmon
