@@ -238,7 +238,27 @@ jobs:
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
         ../scripts/preset-terminal-tools.sh
-        ./scripts/feeds update -a && ./scripts/feeds install -a
+        echo ">>> feeds.conf.default contents:"
+        cat feeds.conf.default
+        echo ">>> Running feeds update..."
+        ./scripts/feeds update -a
+        feeds_update_rc=$?
+        echo ">>> feeds update exit code: $feeds_update_rc"
+        echo ">>> Running feeds install..."
+        ./scripts/feeds install -a
+        feeds_install_rc=$?
+        echo ">>> feeds install exit code: $feeds_install_rc"
+        echo ">>> Checking key packages availability:"
+        for pkg in luci-app-commands luci-app-aria2 luci-app-ttyd luci-app-cpufreq luci-app-diskman luci-app-webadmin; do
+          if [ -d "package/feeds/luci/$pkg" ]; then
+            echo "  $pkg: INSTALLED in package/feeds/luci/"
+          elif [ -d "package/feeds/packages/$pkg" ]; then
+            echo "  $pkg: INSTALLED in package/feeds/packages/"
+          else
+            echo "  $pkg: NOT FOUND in package/feeds/"
+          fi
+        done
+        echo ">>> Total packages in package/feeds/luci/: $(ls package/feeds/luci/ 2>/dev/null | wc -l)"
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
             echo '
         CONFIG_DOCKER_CGROUP_OPTIONS=y
@@ -253,6 +273,11 @@ jobs:
         CONFIG_PACKAGE_luci-lib-docker=y' >> .config
         fi
         make defconfig
+        echo ">>> After make defconfig - checking key packages in .config:"
+        for pkg in luci-app-commands luci-app-aria2 luci-app-ttyd luci-app-cpufreq luci-app-diskman luci-app-webadmin luci-app-minidlna luci-app-zerotier; do
+          status=$(grep "CONFIG_PACKAGE_$pkg" .config 2>/dev/null || echo "NOT IN CONFIG")
+          echo "  $pkg: $status"
+        done
         
     - name: Download Package
       if: inputs.task_setting != 'build-only'
