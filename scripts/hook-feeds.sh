@@ -77,7 +77,7 @@ clone_and_cleanup "packages/net/adguardhome" "immortalwrt" "packages" "use_defau
 
 # Replace luci-app-zerotier
 clone_and_cleanup "luci/applications/luci-app-zerotier" "immortalwrt" "luci" "use_default_branch" "applications/luci-app-zerotier" "luci/applications/luci-app-zerotier"
-clone_and_cleanup "packages/net/zerotier" "immortalwrt" "packages" "use_default_branch" "net/zerotier" "packages/net/zerotier"
+clone_and_cleanup "packages/net/zerotier" "MilesPoupart" "feeds_packages_net_zerotier" "main" "." "packages/net/zerotier"
 
 # add missing packages
 clone_and_cleanup "luci/applications/luci-app-wireguard" "MilesPoupart" "luci" "master" "applications/luci-app-wireguard" "luci/applications/luci-app-wireguard"
@@ -87,7 +87,7 @@ clone_and_cleanup "luci/applications/luci-app-adbyby-plus" "MilesPoupart" "luci"
 rm -rf luci/applications/luci-app-smartdns
 git clone --depth=1 https://github.com/pymumu/luci-app-smartdns luci/applications/luci-app-smartdns
 rm -rf packages/net/smartdns
-git clone --depth=1 https://github.com/pymumu/openwrt-smartdns packages/net/smartdns
+git clone --depth=1 https://github.com/MilesPoupart/openwrt-smartdns packages/net/smartdns
 
 popd
 
