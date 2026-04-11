@@ -122,6 +122,16 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-taskplan
 sed -i '/"admin\/control": {/,/^[[:space:]]*},$/d' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
 sed -i 's/"admin\/control\/taskplan"/"admin\/system\/taskplan"/g' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
 
+# Add luci-app-chatgpt-web
+git clone --depth=1 https://github.com/sirpdboy/luci-app-chatgpt-web
+
+# Replace luci-app-netdata with sirpdboy's version (adds settings & config editor)
+rm -rf ../../customfeeds/luci/applications/luci-app-netdata
+git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
+# Uncomment below if netdata menu entry doesn't show up in LuCI (removes uci config dependency)
+# sed -i '/"uci":.*"netdata"/d' luci-app-netdata/luci-app-netdata/root/usr/share/luci/menu.d/luci-app-netdata.json
+# sed -i 's/\("acl": \[ "luci-app-netdata" \]\),/\1/' luci-app-netdata/luci-app-netdata/root/usr/share/luci/menu.d/luci-app-netdata.json
+
 # Add mosdns
 rm -rf ../../customfeeds/packages/net/mosdns
 rm -rf ../../customfeeds/packages/utils/v2dat
@@ -130,8 +140,8 @@ git clone --depth=1 https://github.com/sbwml/luci-app-mosdns
 
 # Add custom smartdns from MilesPoupart/packages
 rm -rf ../../customfeeds/packages/net/smartdns
-git clone --depth=1 https://github.com/pymumu/openwrt-smartdns ../../customfeeds/packages/net/smartdns
-# github_partial_clone MilesPoupart packages master net/smartdns ../../customfeeds/packages/net/smartdns
+# git clone --depth=1 https://github.com/pymumu/openwrt-smartdns ../../customfeeds/packages/net/smartdns
+git clone --depth=1 https://github.com/MilesPoupart/openwrt-smartdns ../../customfeeds/packages/net/smartdns
 
 # Add zerotier
 rm -rf ../../customfeeds/packages/net/zerotier
@@ -192,6 +202,19 @@ github_partial_clone linkease nas-packages use_default_branch multimedia/ffmpeg-
 # Add OpenClash
 rm -rf ../../customfeeds/luci/applications/luci-app-openclash
 github_partial_clone vernesong OpenClash use_default_branch luci-app-openclash luci-app-openclash
+
+# Patch OpenClash: ISP SNI-blocking fix (remove proxy:DIRECT, inject sub_ua)
+OPENCLASH_OVERWRITE="luci-app-openclash/root/etc/openclash/custom/openclash_custom_overwrite.sh"
+if [ -f "$OPENCLASH_OVERWRITE" ]; then
+    sed -i '/^exit 0$/d' "$OPENCLASH_OVERWRITE"
+    cat "$GITHUB_WORKSPACE/data/openclash/openclash_provider_fix.sh" >> "$OPENCLASH_OVERWRITE"
+    echo "exit 0" >> "$OPENCLASH_OVERWRITE"
+    echo "OpenClash: provider fix injected into custom overwrite script."
+fi
+cp -f "$GITHUB_WORKSPACE/data/openclash/openclash_isp_block_test.sh" \
+    luci-app-openclash/root/usr/share/openclash/openclash_isp_block_test.sh
+chmod +x luci-app-openclash/root/usr/share/openclash/openclash_isp_block_test.sh
+echo "OpenClash: ISP block test script installed."
 
 # add wrtbwmon
 github_partial_clone brvphoenix luci-app-wrtbwmon use_default_branch luci-app-wrtbwmon luci-app-wrtbwmon
