@@ -510,7 +510,7 @@ jobs:
           files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
 
     - name: Delete releases and workflow runs
-      uses: ophub/delete-releases-workflows@v0
+      uses: ophub/delete-releases-workflows@main
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         delete_releases: true
