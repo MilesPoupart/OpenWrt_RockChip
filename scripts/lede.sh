@@ -148,9 +148,6 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-taskplan
 sed -i '/"admin\/control": {/,/^[[:space:]]*},$/d' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
 sed -i 's/"admin\/control\/taskplan"/"admin\/system\/taskplan"/g' luci-app-taskplan/luci-app-taskplan/root/usr/share/luci/menu.d/luci-app-taskplan.json
 
-# Add luci-app-chatgpt-web
-git clone --depth=1 https://github.com/sirpdboy/luci-app-chatgpt-web
-
 # Replace luci-app-netdata with sirpdboy's version (adds settings & config editor)
 rm -rf ../../customfeeds/luci/applications/luci-app-netdata
 git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
