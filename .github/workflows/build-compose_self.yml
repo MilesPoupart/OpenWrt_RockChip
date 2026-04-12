@@ -508,20 +508,16 @@ jobs:
           body_path: release.txt
           files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
 
-    - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
-      with:
-        retain_days: 1
-        keep_minimum_runs: 1
-
-    - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.3.4
+    - name: Delete releases and workflow runs
+      uses: ophub/delete-releases-workflows@v0
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-          keep_latest: 20
-          delete_tags: true
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        delete_releases: true
+        releases_keep_latest: 20
+        delete_tags: true
+        delete_workflows: true
+        workflows_keep_day: 1
+        gh_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete Artifacts
       uses: geekyeggo/delete-artifact@v6
