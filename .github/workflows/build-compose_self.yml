@@ -498,6 +498,7 @@ jobs:
       with:
           name: ${{ needs.CompileFirmware.outputs.RELEASE_DATE }} NanoPi-${{ inputs.compile_device }}-linux-${{ needs.CompileFirmware.outputs.KERNEL_VERSION }} 固件
           tag_name: ${{ needs.CompileFirmware.outputs.RELEASE_TAG }}
+          target_commitish: ${{ github.sha }}
           body_path: release.txt
           files: ${{ needs.CompileFirmware.outputs.FIRMWARE }}/*
 
