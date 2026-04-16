@@ -124,10 +124,7 @@ sed -i 's/"admin\/control\/taskplan"/"admin\/system\/taskplan"/g' luci-app-taskp
 
 # Replace luci-app-netdata with sirpdboy's version (adds settings & config editor)
 rm -rf ../../customfeeds/luci/applications/luci-app-netdata
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
-# Uncomment below if netdata menu entry doesn't show up in LuCI (removes uci config dependency)
-# sed -i '/"uci":.*"netdata"/d' luci-app-netdata/luci-app-netdata/root/usr/share/luci/menu.d/luci-app-netdata.json
-# sed -i 's/\("acl": \[ "luci-app-netdata" \]\),/\1/' luci-app-netdata/luci-app-netdata/root/usr/share/luci/menu.d/luci-app-netdata.json
+git clone --depth=1 https://github.com/MilesPoupart/luci-app-netdata
 
 # Add mosdns
 rm -rf ../../customfeeds/packages/net/mosdns
