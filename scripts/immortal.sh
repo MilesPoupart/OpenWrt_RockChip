@@ -250,6 +250,10 @@ git clone --depth=1 https://github.com/sbwml/luci-app-openlist2
 # Move openlist2 from services to nas menu
 sed -i 's|admin/services/openlist2|admin/nas/openlist2|g' luci-app-openlist2/luci-app-openlist2/root/usr/share/luci/menu.d/luci-app-openlist2.json
 
+# Replace luci-app-diskman with sbwml's version
+rm -rf ../../customfeeds/luci/applications/luci-app-diskman
+git clone --depth=1 https://github.com/sbwml/luci-app-diskman
+
 # qbittorrent
 rm -rf ../../customfeeds/packages/net/qBittorrent
 rm -rf ../../customfeeds/packages/libs/rblibtorrent
