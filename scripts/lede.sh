@@ -254,6 +254,10 @@ rm -rf ../../customfeeds/packages/libs/rblibtorrent
 rm -rf ../../customfeeds/luci/applications/luci-app-qbittorrent
 git clone --depth=1 https://github.com/sbwml/luci-app-qbittorrent
 
+# Replace luci-app-diskman with sbwml's version
+rm -rf ../../customfeeds/luci/applications/luci-app-diskman
+git clone --depth=1 https://github.com/sbwml/luci-app-diskman
+
 # ram free and quickfile
 rm -rf ../../customfeeds/luci/applications/luci-app-ramfree
 rm -rf ../../customfeeds/luci/applications/luci-app-quickfile
