@@ -267,6 +267,8 @@ git clone --depth=1 https://github.com/sbwml/luci-app-ramfree
 git clone --depth=1 https://github.com/sbwml/luci-app-quickfile
 
 # easytier
+rm -rf ../../customfeeds/luci/applications/luci-app-easytier
+rm -rf ../../customfeeds/packages/net/easytier
 git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git
 
 # Add luci-app-smartdns & smartdns
