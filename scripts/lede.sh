@@ -65,6 +65,10 @@ cp -f "$GITHUB_WORKSPACE/80_mount_root" package/base-files/files/lib/preinit/80_
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 
+# Rust
+rm -rf feeds/packages/lang/rust
+git clone --depth=1 https://github.com/sbwml/packages_lang_rust feeds/packages/lang/rust
+
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
 rm -rf feeds/packages/utils/dockerd
@@ -277,8 +281,11 @@ git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git
 
 # Add zerotier
 rm -rf ../../customfeeds/packages/net/zerotier
-git clone --depth=1 https://github.com/MilesPoupart/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
-# git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
+rm -rf ../../customfeeds/luci/applications/luci-app-zerotier
+git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
+github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-zerotier luci-app-zerotier
+# git clone --depth=1 https://github.com/MilesPoupart/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
+# github_partial_clone immortalwrt packages master net/zerotier ../../customfeeds/packages/net/zerotier
 
 # Add luci-app-ustreamer
 rm -rf ../../customfeeds/packages/multimedia/ustreamer
