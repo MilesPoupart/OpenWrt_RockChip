@@ -66,8 +66,8 @@ rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 
 # Rust
-rm -rf feeds/packages/lang/rust
-git clone --depth=1 https://github.com/sbwml/packages_lang_rust feeds/packages/lang/rust
+# rm -rf feeds/packages/lang/rust
+# git clone --depth=1 https://github.com/sbwml/packages_lang_rust feeds/packages/lang/rust
 
 # Docker ecosystem
 rm -rf feeds/packages/utils/docker
