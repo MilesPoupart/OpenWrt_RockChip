@@ -98,7 +98,6 @@ github_partial_clone Lienol openwrt-package main luci-app-ipsec-server    luci-a
 github_partial_clone Lienol openwrt-package main luci-app-kodexplorer     luci-app-kodexplorer
 github_partial_clone Lienol openwrt-package main luci-app-pptp-server     luci-app-pptp-server
 github_partial_clone Lienol openwrt-package main luci-app-openvpn-server  luci-app-openvpn-server
-github_partial_clone Lienol openwrt-package main other/luci-lib-docker    luci-lib-docker
 # 清理 Lienol 默认带过来的旧 uci config，避免覆盖用户配置
 rm -rf luci-app-openvpn-server/root/etc/config
 
