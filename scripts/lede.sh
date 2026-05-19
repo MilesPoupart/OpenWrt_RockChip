@@ -89,19 +89,20 @@ git clone --depth=1 -b openwrt-24.10 https://github.com/sbwml/luci-app-dockerman
 rm -rf ../../customfeeds/luci/applications/luci-app-watchcat-plus
 git clone https://github.com/0x676e67/luci-app-watchcat-plus.git
 
-# Add Lienol's Packages
-git clone --depth=1 https://github.com/Lienol/openwrt-package
+# Add Lienol's Packages — 按需取用，避免与其它来源（sbwml / customfeeds）同名冲突
+# 三个 LuCI 自带的同名版需要先删，留位给 Lienol 版
 rm -rf ../../customfeeds/luci/applications/luci-app-kodexplorer
 rm -rf ../../customfeeds/luci/applications/luci-app-ipsec-server
 rm -rf ../../customfeeds/luci/applications/luci-app-openvpn-server
-rm -rf openwrt-package/verysync
-rm -rf openwrt-package/luci-app-verysync
-rm -rf openwrt-package/luci-app-softethervpn
-rm -rf openwrt-package/luci-app-ramfree
-rm -rf openwrt-package/luci-app-nginx-pingos
-rm -rf openwrt-package/luci-app-socat
-# rm -rf openwrt-package/luci-app-socat/root/etc/config
-rm -rf openwrt-package/luci-app-openvpn-server/root/etc/config
+# 真正想用的 Lienol 子包（不再 clone 整个仓库，避免 other/luci-app-diskman、
+# other/luci-app-dockerman、other/luci-app-adguardhome、other/parted 等同名包参与扫描）
+github_partial_clone Lienol openwrt-package main luci-app-ipsec-server    luci-app-ipsec-server
+github_partial_clone Lienol openwrt-package main luci-app-kodexplorer     luci-app-kodexplorer
+github_partial_clone Lienol openwrt-package main luci-app-pptp-server     luci-app-pptp-server
+github_partial_clone Lienol openwrt-package main luci-app-openvpn-server  luci-app-openvpn-server
+github_partial_clone Lienol openwrt-package main other/luci-lib-docker    luci-lib-docker
+# 清理 Lienol 默认带过来的旧 uci config，避免覆盖用户配置
+rm -rf luci-app-openvpn-server/root/etc/config
 
 # Add luci-app-socat
 rm -rf ../../customfeeds/luci/applications/luci-app-socat
