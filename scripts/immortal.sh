@@ -146,6 +146,8 @@ rm -rf ../../customfeeds/packages/net/zerotier
 rm -rf ../../customfeeds/luci/applications/luci-app-zerotier
 git clone --depth=1 https://github.com/sbwml/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
 github_partial_clone sbwml openwrt_pkgs use_default_branch luci-app-zerotier luci-app-zerotier
+# Move zerotier from services to vpn menu
+sed -i 's|admin/services/zerotier|admin/vpn/zerotier|g' luci-app-zerotier/root/usr/share/luci/menu.d/luci-app-zerotier.json
 # git clone --depth=1 https://github.com/MilesPoupart/feeds_packages_net_zerotier.git ../../customfeeds/packages/net/zerotier
 # github_partial_clone immortalwrt packages master net/zerotier ../../customfeeds/packages/net/zerotier
 
