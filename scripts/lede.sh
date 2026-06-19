@@ -197,9 +197,11 @@ echo "OpenClash: ISP block test script installed."
 # Add ddnsto & linkease
 rm -rf ../../customfeeds/luci/applications/luci-app-ddnsto
 rm -rf ../../customfeeds/luci/applications/luci-app-linkease
-github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-app-ddnsto luci-app-ddnsto
+# ddnsto 已迁出 nas-packages，改用官方独立仓库（核心 4.2.x，二进制走 ddnsto-binary，luci 为 React 新界面）
+github_partial_clone linkease ddnsto-openwrt-package use_default_branch ddnsto ddnsto
+github_partial_clone linkease ddnsto-openwrt-package use_default_branch luci-app-ddnsto luci-app-ddnsto
+# linkease / linkmount / ffmpeg-remux 仍只在 nas-packages 维护
 github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-app-linkease luci-app-linkease
-github_partial_clone linkease nas-packages use_default_branch network/services/ddnsto ddnsto
 github_partial_clone linkease nas-packages use_default_branch network/services/linkease linkease
 github_partial_clone linkease nas-packages use_default_branch network/services/linkmount linkmount
 github_partial_clone linkease nas-packages use_default_branch multimedia/ffmpeg-remux ffmpeg-remux
