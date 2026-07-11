@@ -259,7 +259,8 @@ sed -i 's|admin/services/openlist2|admin/nas/openlist2|g' luci-app-openlist2/luc
 rm -rf ../../customfeeds/packages/net/qBittorrent
 rm -rf ../../customfeeds/packages/libs/rblibtorrent
 rm -rf ../../customfeeds/luci/applications/luci-app-qbittorrent
-git clone --depth=1 https://github.com/sbwml/luci-app-qbittorrent
+# git clone --depth=1 https://github.com/sbwml/luci-app-qbittorrent
+git clone --depth=1 https://github.com/MilesPoupart/luci-app-qbittorrent
 
 # Replace luci-app-diskman with sbwml's version
 rm -rf ../../customfeeds/luci/applications/luci-app-diskman
