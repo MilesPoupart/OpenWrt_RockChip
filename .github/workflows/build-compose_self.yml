@@ -36,6 +36,7 @@ on:
           default: '6.12'
           type: choice
           options:
+          - '6.18'
           - '6.12'
           - '6.6'
           - '6.1'
@@ -230,8 +231,8 @@ jobs:
         fi
         ../$DIY_SH
         ../$DIY_DEV_SH
-        if [ "$KERNEL_VER" != "6.12" ]; then
-          sed -i "s/6.12/$KERNEL_VER/g" target/linux/rockchip/Makefile
+        if [ "$KERNEL_VER" != "6.18" ]; then
+          sed -i "s/6.18/$KERNEL_VER/g" target/linux/rockchip/Makefile
         fi
         cat target/linux/rockchip/Makefile
         ../scripts/preset-clash-core.sh arm64
