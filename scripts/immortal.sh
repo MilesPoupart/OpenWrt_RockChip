@@ -268,7 +268,8 @@ git clone --depth=1 https://github.com/sbwml/luci-app-diskman
 rm -rf ../../customfeeds/packages/net/qBittorrent
 rm -rf ../../customfeeds/packages/libs/rblibtorrent
 rm -rf ../../customfeeds/luci/applications/luci-app-qbittorrent
-git clone --depth=1 https://github.com/sbwml/luci-app-qbittorrent
+# git clone --depth=1 https://github.com/sbwml/luci-app-qbittorrent
+git clone --depth=1 https://github.com/MilesPoupart/luci-app-qbittorrent
 
 # ram free and quickfile
 rm -rf ../../customfeeds/luci/applications/luci-app-ramfree
