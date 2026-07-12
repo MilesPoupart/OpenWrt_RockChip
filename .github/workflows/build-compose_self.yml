@@ -243,6 +243,13 @@ jobs:
           else
             echo ">>> kmod-drm-client-lib already present, skip"
           fi
+          # Fix: cec.ko file clash between kmod-drm-rockchip and kmod-cec-core (kernel 6.18)
+          if grep -q 'cec/core/cec\.ko$' "$RK_MK" && ! grep -q 'cec/core/cec\.ko@lt6.18' "$RK_MK"; then
+            sed -i 's|cec/core/cec\.ko$|cec/core/cec.ko@lt6.18|' "$RK_MK"
+            echo ">>> Patched: made cec.ko conditional on lt6.18 in drm-rockchip FILES"
+          else
+            echo ">>> cec.ko already conditional or entry not found, skip"
+          fi
         fi
         ../$DIY_SH
         ../$DIY_DEV_SH
