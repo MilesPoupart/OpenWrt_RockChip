@@ -114,10 +114,13 @@ jobs:
       run: |
         echo "LEDE Source=${{ inputs.lede_source }}"
         echo "Compile Device=${{ inputs.compile_device}}"
+        echo "Kernel Version=${{ inputs.kernel_version}}"
         echo "LuCI Version=${{ inputs.luci_version}}"
         echo "Compile Version=${{ inputs.compile_version }}"
         echo "Tsak settings=${{ inputs.task_setting }}"
         echo "Compile machine=${{ inputs.use_machine }}"
+        echo "Docker=${{ inputs.docker_contain }}"
+        echo "Task settings=${{ inputs.task_setting }}"
 
     - name: Checkout
       if: inputs.task_setting != 'build-only'
