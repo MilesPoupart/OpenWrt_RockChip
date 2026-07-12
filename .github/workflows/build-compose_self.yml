@@ -227,6 +227,23 @@ jobs:
         else
           echo ">>> kmod-rtw89-8852be already has rtw89_8852b_common or entry not found, skip"
         fi
+        # Fix: kmod-drm-rockchip missing drm_display_helper.ko + drm_client_lib.ko deps (kernel 6.18)
+        RK_MK=target/linux/rockchip/modules.mk
+        if [ -f "$RK_MK" ]; then
+          if grep -q 'LINUX_6_12):kmod-drm-display-helper' "$RK_MK" && \
+             ! grep -q 'LINUX_6_12||LINUX_6_18):kmod-drm-display-helper' "$RK_MK"; then
+            sed -i 's/LINUX_6_12):kmod-drm-display-helper/LINUX_6_12||LINUX_6_18):kmod-drm-display-helper/' "$RK_MK"
+            echo ">>> Patched: added LINUX_6_18 to kmod-drm-display-helper condition in drm-rockchip"
+          else
+            echo ">>> kmod-drm-display-helper already has LINUX_6_18 or entry not found, skip"
+          fi
+          if ! grep -q 'kmod-drm-client-lib' "$RK_MK"; then
+            sed -i 's/+kmod-multimedia-input/+LINUX_6_18:kmod-drm-client-lib \\\n\t+kmod-multimedia-input/' "$RK_MK"
+            echo ">>> Patched: added kmod-drm-client-lib dependency to drm-rockchip"
+          else
+            echo ">>> kmod-drm-client-lib already present, skip"
+          fi
+        fi
         ../$DIY_SH
         ../$DIY_DEV_SH
         if [ "$KERNEL_VER" != "6.18" ]; then
