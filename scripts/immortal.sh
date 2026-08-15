@@ -53,7 +53,10 @@ function github_partial_clone() {
     if [ -d "${repo_path}/${required_dir}" ]; then
         cp -r "${repo_path}/${required_dir}/"* "$saved_dir/"
     else
-        echo "Warning: Directory ${required_dir} not found in ${author_name}/${repository_name}"
+        # 上游删除/改名目录时留下空目录会掩盖问题，直接清掉并在 Actions 里标红
+        rmdir "$saved_dir" 2>/dev/null
+        echo "::error::Directory ${required_dir} not found in ${author_name}/${repository_name}"
+        return 1
     fi
 }
 
@@ -187,16 +190,18 @@ rm -rf ../../customfeeds/luci/applications/luci-app-wechatpush
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git
 
 # Add ddnsto & linkease
-rm -rf ../../customfeeds/luci/applications/luci-app-ddnsto
-rm -rf ../../customfeeds/luci/applications/luci-app-linkease
-# ddnsto 已迁出 nas-packages，改用官方独立仓库（核心 4.2.x，二进制走 ddnsto-binary，luci 为 React 新界面）
-github_partial_clone linkease ddnsto-openwrt-package use_default_branch ddnsto ddnsto
-github_partial_clone linkease ddnsto-openwrt-package use_default_branch luci-app-ddnsto luci-app-ddnsto
-# linkease / linkmount / ffmpeg-remux 仍只在 nas-packages 维护
-github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-app-linkease luci-app-linkease
-github_partial_clone linkease nas-packages use_default_branch network/services/linkease linkease
-github_partial_clone linkease nas-packages use_default_branch network/services/linkmount linkmount
-github_partial_clone linkease nas-packages use_default_branch multimedia/ffmpeg-remux ffmpeg-remux
+# 统一取自 linkease 官方 monorepo：nas-packages（后端）+ nas-packages-luci（前端）。
+# ddnsto-openwrt-package 与 nas-packages 内的 ddnsto 目前逐字节相同，但只有 monorepo 在持续维护。
+github_partial_clone linkease nas-packages     use_default_branch network/services/ddnsto  ddnsto
+github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-app-ddnsto    luci-app-ddnsto
+# 用经典版 linkease（1.7.5）。完整版 linkeasefull 装机约 207MB 且必须先在 LuCI 里选一块持久化数据盘才肯启动，
+# 两者还互斥（linkeasefull.init 见到 linkease.enabled=1 会拒绝启动，且同占 8897），故只拉经典版。
+# 1.7.5 起共用二进制拆到 linkease-common-bin，文件管理界面拆到 luci-lib-linkeasefile，两者缺一不可。
+github_partial_clone linkease nas-packages     use_default_branch network/services/linkease            linkease
+github_partial_clone linkease nas-packages     use_default_branch network/services/linkease-common-bin linkease-common-bin
+github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-app-linkease        luci-app-linkease
+github_partial_clone linkease nas-packages-luci use_default_branch luci/luci-lib-linkeasefile    luci-lib-linkeasefile
+# linkmount 已被上游删除（功能并入 linkeasefull），ffmpeg-remux 也不再被 linkease 引用，均不再拉取
 
 # Add OpenClash
 rm -rf ../../customfeeds/luci/applications/luci-app-openclash
