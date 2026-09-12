@@ -91,7 +91,6 @@ on:
 
 env:
   REPO_URL: https://github.com/${{ inputs.lede_source }}
-  REPO_BRANCH: stable
   CONFIG_FILE: configs/lede/${{ inputs.compile_version }}.config
   DIY_SH: scripts/lede.sh
   DIY_DEV_SH: scripts/${{ inputs.compile_device }}.sh
@@ -218,41 +217,6 @@ jobs:
           echo ">>> Patched: added +kmod-drm-shmem-helper to kmod-drm-panfrost DEPENDS"
         else
           echo ">>> kmod-drm-panfrost already has +kmod-drm-shmem-helper or entry not found, skip"
-        fi
-        # Fix: kmod-rtw89-8852be missing rtw89_8852b_common.ko (backports >= 6.18)
-        RTK_MK=package/kernel/mac80211/realtek.mk
-        if [ -f "$RTK_MK" ] && \
-           grep -q 'KernelPackage/rtw89-8852be' "$RTK_MK" && \
-           ! grep -q 'rtw89_8852b_common' "$RTK_MK"; then
-          sed -i '/config_package,rtw89-8852be)/ s/RTW89_8852B RTW89_8852BE/RTW89_8852B RTW89_8852B_COMMON RTW89_8852BE/' "$RTK_MK"
-          sed -i '/KernelPackage\/rtw89-8852be/,/^endef/ s|rtw89/rtw89_8852b\.ko|rtw89/rtw89_8852b_common.ko \\\'$'\n\t''$(PKG_BUILD_DIR)/drivers/net/wireless/realtek/rtw89/rtw89_8852b.ko|' "$RTK_MK"
-          echo ">>> Patched: added rtw89_8852b_common.ko to kmod-rtw89-8852be"
-        else
-          echo ">>> kmod-rtw89-8852be already has rtw89_8852b_common or entry not found, skip"
-        fi
-        # Fix: kmod-drm-rockchip missing drm_display_helper.ko + drm_client_lib.ko deps (kernel 6.18)
-        RK_MK=target/linux/rockchip/modules.mk
-        if [ -f "$RK_MK" ]; then
-          if grep -q 'LINUX_6_12):kmod-drm-display-helper' "$RK_MK" && \
-             ! grep -q 'LINUX_6_12||LINUX_6_18):kmod-drm-display-helper' "$RK_MK"; then
-            sed -i 's/LINUX_6_12):kmod-drm-display-helper/LINUX_6_12||LINUX_6_18):kmod-drm-display-helper/' "$RK_MK"
-            echo ">>> Patched: added LINUX_6_18 to kmod-drm-display-helper condition in drm-rockchip"
-          else
-            echo ">>> kmod-drm-display-helper already has LINUX_6_18 or entry not found, skip"
-          fi
-          if ! grep -q 'kmod-drm-client-lib' "$RK_MK"; then
-            sed -i 's/+kmod-multimedia-input/+LINUX_6_18:kmod-drm-client-lib \\\n\t+kmod-multimedia-input/' "$RK_MK"
-            echo ">>> Patched: added kmod-drm-client-lib dependency to drm-rockchip"
-          else
-            echo ">>> kmod-drm-client-lib already present, skip"
-          fi
-          # Fix: cec.ko file clash between kmod-drm-rockchip and kmod-cec-core (kernel 6.18)
-          if grep -q 'cec/core/cec\.ko$' "$RK_MK" && ! grep -q 'cec/core/cec\.ko@lt6.18' "$RK_MK"; then
-            sed -i 's|cec/core/cec\.ko$|cec/core/cec.ko@lt6.18|' "$RK_MK"
-            echo ">>> Patched: made cec.ko conditional on lt6.18 in drm-rockchip FILES"
-          else
-            echo ">>> cec.ko already conditional or entry not found, skip"
-          fi
         fi
         ../$DIY_SH
         ../$DIY_DEV_SH
