@@ -228,6 +228,8 @@ jobs:
         ../scripts/preset-terminal-tools.sh
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        # Temporary GN / netspeedtest compatibility fixes (idempotent).
+        python3 ../scripts/fix-python-package-compat.py
         [ -e ../$CONFIG_FILE ] && mv ../$CONFIG_FILE .config
         sed -i '/CONFIG_TARGET_rockchip_armv8=y/a\CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${{ inputs.compile_device }}=y' .config
         if [ ${{ inputs.docker_contain }} == "docker" ]; then
@@ -357,6 +359,8 @@ jobs:
         cd $OPENWRTROOT
         chmod +x ../scripts/*.sh
         ../scripts/feeds_settings.sh
+        # Also repair sources restored from older Docker images (build-only).
+        python3 ../scripts/fix-python-package-compat.py
         make defconfig
 
     - name: Show config
