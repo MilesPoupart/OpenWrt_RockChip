@@ -96,10 +96,6 @@
   
   https://github.com/jerrykuku/luci-theme-argon
   
-- luci-app-argon-config:
-
-  https://github.com/jerrykuku/luci-app-argon-config
-
 - luci-udptools:
   
   https://github.com/bao3/openwrt-udp2raw

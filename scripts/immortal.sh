@@ -235,7 +235,6 @@ git clone --depth=1 https://github.com/timsaya/luci-app-bandix
 rm -rf ../../customfeeds/luci/themes/luci-theme-argon
 rm -rf ../../customfeeds/luci/applications/luci-app-argon-config
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon
-git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
 rm -rf ./luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 cp -f "$GITHUB_WORKSPACE/data/bg1.jpg" luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 rm -rf ../../customfeeds/luci/themes/luci-theme-design
