@@ -384,7 +384,7 @@ jobs:
         make target/compile -j$(nproc) || make target/compile -j1 V=s IGNORE_ERRORS=1
         make diffconfig
   
-  CompileFirmware:
+  CompilePackage:
     runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
     timeout-minutes: 1440
     needs: [CompileInitialize, CompileToolchain]
@@ -395,15 +395,8 @@ jobs:
       TARGET: ${{ steps.compile.outputs.TARGET }}
       SUBTARGET: ${{ steps.compile.outputs.SUBTARGET }}
       FIRMWARE: ${{ steps.compile.outputs.FIRMWARE }}
-      GENERATE_STATUS: ${{ steps.generate.outputs.GENERATE_STATUS }}
-      RELEASE_DATE: ${{ steps.tag.outputs.RELEASE_DATE }}
-      RELEASE_TAG: ${{ steps.tag.outputs.RELEASE_TAG }}
-      RELEASE_STATUS: ${{ steps.tag.outputs.RELEASE_STATUS }}
-      KERNEL_VERSION: ${{ steps.generate.outputs.KERNEL_VERSION }}
-      SOURCE_SHA: ${{ needs.CompileInitialize.outputs.SOURCE_SHA }}
 
     steps:
-
     - name: Compile package
       id: compile
       run: |
@@ -428,12 +421,45 @@ jobs:
         echo "SUBTARGET=$SUBTARGET" >> $GITHUB_OUTPUT
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "FIRMWARE=$PWD" >> $GITHUB_OUTPUT
-        echo "COMPILE_STATUS=success" >> $GITHUB_OUTPUT
+
+  CompileFirmware:
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.use_machine }}"]
+    timeout-minutes: 1440
+    needs: [CompileInitialize, CompilePackage]
+
+    outputs:
+      OPENWRTROOT: ${{ needs.CompilePackage.outputs.OPENWRTROOT }}
+      PLATFORM: ${{ needs.CompilePackage.outputs.PLATFORM }}
+      TARGET: ${{ needs.CompilePackage.outputs.TARGET }}
+      SUBTARGET: ${{ needs.CompilePackage.outputs.SUBTARGET }}
+      FIRMWARE: ${{ needs.CompilePackage.outputs.FIRMWARE }}
+      GENERATE_STATUS: ${{ steps.generate.outputs.GENERATE_STATUS }}
+      RELEASE_DATE: ${{ steps.tag.outputs.RELEASE_DATE }}
+      RELEASE_TAG: ${{ steps.tag.outputs.RELEASE_TAG }}
+      RELEASE_STATUS: ${{ steps.tag.outputs.RELEASE_STATUS }}
+      KERNEL_VERSION: ${{ steps.generate.outputs.KERNEL_VERSION }}
+      SOURCE_SHA: ${{ needs.CompileInitialize.outputs.SOURCE_SHA }}
+
+    env:
+      OPENWRTROOT: ${{ needs.CompilePackage.outputs.OPENWRTROOT }}
+      PLATFORM: ${{ needs.CompilePackage.outputs.PLATFORM }}
+      TARGET: ${{ needs.CompilePackage.outputs.TARGET }}
+      SUBTARGET: ${{ needs.CompilePackage.outputs.SUBTARGET }}
+      FIRMWARE: ${{ needs.CompilePackage.outputs.FIRMWARE }}
+
+    steps:
 
     - name: Generate Firmware
-      if: steps.compile.outputs.COMPILE_STATUS == 'success'
       id: generate
       run: |
+        move_if_exists() {
+          if [ -e "$1" ]; then
+            mv -- "$1" "$2"
+          else
+            echo "Skipping missing source: $1"
+          fi
+        }
+
         cd configs/opkg
         sed -i "s/subtarget/$SUBTARGET/g" distfeeds*.conf
         sed -i "s/target\//$TARGET\//g" distfeeds*.conf
@@ -458,22 +484,25 @@ jobs:
         make package/install -j$(nproc) || make package/install -j1 V=s
         make target/install -j$(nproc) || make target/install -j1 V=s
         pushd bin/targets/rockchip/armv8
-        kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        kernelv=""
+        if [ -f "openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest" ]; then
+          kernelv=`cat openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest | grep 'kernel - ' |  awk -F '[- ]' '{print $4}'`
+        fi
         echo "KERNEL_VERSION=$kernelv" >> $GITHUB_OUTPUT
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
+        move_if_exists openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}.manifest
         # rm -rf openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-rootfs.tar.gz
-        mv config.buildinfo ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-config.buildinfo
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
-        mv openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz
+        move_if_exists config.buildinfo ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-config.buildinfo
+        move_if_exists openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-ext4-sysupgrade.img.gz
+        move_if_exists openwrt-rockchip-armv8-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz ${{ inputs.docker_contain }}-${{ inputs.compile_version }}-friendlyarm_nanopi-${{ inputs.compile_device }}-squashfs-sysupgrade.img.gz
         popd
         mkdir -p server/web/snapshots/targets/$TARGET/$SUBTARGET
         cp -r $OPENWRTROOT/bin/packages server/web/snapshots
         cp -r $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET/packages server/web/snapshots/targets/$TARGET/$SUBTARGET
-        mv server packages-server
+        move_if_exists server packages-server
         zip -qrm ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip packages-server
-        mv ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
+        move_if_exists ${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-packages-server.zip $OPENWRTROOT/bin/targets/$TARGET/$SUBTARGET
         make checksum
-        mv bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-sha256sums
+        move_if_exists bin/targets/rockchip/armv8/sha256sums bin/targets/rockchip/armv8/${{ inputs.compile_device }}-${{ inputs.docker_contain }}-${{ inputs.compile_version }}-sha256sums
         echo "GENERATE_STATUS=success" >> $GITHUB_OUTPUT
 
         
