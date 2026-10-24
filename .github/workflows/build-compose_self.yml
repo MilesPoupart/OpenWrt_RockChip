@@ -31,7 +31,7 @@ on:
       kernel_version:
           description: 'Linux kernel version'
           required: true
-          default: '6.12'
+          default: '6.18'
           type: choice
           options:
           - '6.18'

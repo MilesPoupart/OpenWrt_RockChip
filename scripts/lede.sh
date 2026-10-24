@@ -27,12 +27,12 @@ function github_partial_clone() {
 
     mkdir -p "$saved_dir"
 
-    # Create author-specific directory to avoid conflicts between different authors with same repo names
-    local repo_path="${clone_dir}/${author_name}/${repository_name}"
+    # Isolate branches/revisions as well as repositories in the clone cache.
+    local repo_path="${clone_dir}/${author_name}/${repository_name}/${branch_name}/${reset_commit:-branch-head}"
     
     # Only clone if repository doesn't exist
     if [ ! -d "$repo_path" ]; then
-        mkdir -p "${clone_dir}/${author_name}"
+        mkdir -p "$(dirname "$repo_path")"
         if [ -n "$reset_commit" ]; then
             echo "Fetching ${author_name}/${repository_name} at commit ${reset_commit}..."
             git init "$repo_path"
@@ -365,7 +365,8 @@ popd
 # Add Pandownload
 pushd package/lean
 rm -rf ../../customfeeds/packages/net/pandownload-fake-server
-github_partial_clone immortalwrt packages use_default_branch net/pandownload-fake-server pandownload-fake-server
+# This package is no longer available on master.
+github_partial_clone immortalwrt packages openwrt-24.10 net/pandownload-fake-server pandownload-fake-server || exit 1
 popd
 
 # Mod zzz-default-settings

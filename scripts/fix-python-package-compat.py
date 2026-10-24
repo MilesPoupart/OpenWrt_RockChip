@@ -55,14 +55,17 @@ for gn in unique_dirs([root / 'feeds/helloworld/gn', root / 'package/community/h
     if compiler_fixed and result_fixed:
         print(f'GN already fixed, skip: {gn}')
         continue
-    # Unknown revisions/layouts need review; do not blindly apply an old source patch.
-    if 'PKG_SOURCE_VERSION:=356ee8a865882bb3615422539ef262e32b102030' not in text:
-        raise SystemExit(f'{gn}: unknown GN revision; review temporary fix')
     if not compiler_fixed:
         if text.count(original) != 1:
             raise SystemExit(f'{makefile}: unexpected Host/Configure')
         text = text.replace(original, fixed, 1)
     if not result_fixed:
+        # Only the source patch depends on the reviewed GN revision.
+        # New upstream patches may already fix Result while still needing HOSTCXX.
+        revision = re.search(r'^PKG_SOURCE_VERSION\s*:=\s*(\S+)', text, re.MULTILINE)
+        revision = revision.group(1) if revision else '<missing>'
+        if revision != '356ee8a865882bb3615422539ef262e32b102030':
+            raise SystemExit(f'{gn}: unknown GN revision {revision}; review Result compatibility fix')
         if 'Result(T&& value)' not in effective:
             raise SystemExit(f'{gn}: expected Result fallback missing; review temporary fix')
         if dest.exists():

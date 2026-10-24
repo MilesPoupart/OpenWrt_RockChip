@@ -1,16 +1,18 @@
-# remove 1608Mhz for kernel 6.1, 6.6, 6.12 & 6.18
-rm -rf target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-rm -rf target/linux/rockchip/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-rm -rf target/linux/rockchip/patches-6.12/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-cp -f $GITHUB_WORKSPACE/data/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.1/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-cp -f $GITHUB_WORKSPACE/data/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.6/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-cp -f $GITHUB_WORKSPACE/data/patches-6.12/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.12/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-# kernel 6.18: upstream has no 991 patch, just add our mild version
-cp -f $GITHUB_WORKSPACE/data/patches-6.18/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch target/linux/rockchip/patches-6.18/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
+# Install CPU operating-point patches only for kernel trees present in this source.
+for kernel in 6.1 6.6 6.12 6.18; do
+    patch_dir="target/linux/rockchip/patches-${kernel}"
+    if [ -d "$patch_dir" ]; then
+        cp -f "$GITHUB_WORKSPACE/data/patches-${kernel}/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch" "$patch_dir/" || exit 1
+    else
+        echo "Skip CPU patch: $patch_dir is not present"
+    fi
+done
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
-sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/luci2/bin/config_generate
+if [ -f package/base-files/luci2/bin/config_generate ]; then
+    sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/luci2/bin/config_generate
+fi
 sed -i '/uci commit system/i\uci set system.@system[0].hostname='HarmonyWrt'' package/lean/default-settings/files/zzz-default-settings
 sed -i "s/LEDE /MilesPoupart @ HarmonyWrt /g" package/lean/default-settings/files/zzz-default-settings
 
