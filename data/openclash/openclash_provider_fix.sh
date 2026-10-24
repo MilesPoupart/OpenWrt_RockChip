@@ -73,7 +73,7 @@
        begin
           Value = YAML.load_file('$CONFIG_FILE');
        rescue Exception => e
-          puts '${LOGTIME} Error: Provider fix failed to load config,ã€? + e.message + 'ã€?;
+          puts '${LOGTIME} Error: Provider fix failed to load config,ã€' + e.message + 'ã€‘';
           exit;
        end;
 
@@ -118,7 +118,7 @@
        puts '${LOGTIME} Tip: Provider fix done (' + parts.join('; ') + ')';
 
        rescue Exception => e
-          puts '${LOGTIME} Error: Provider fix failed,ã€? + e.message + 'ã€?;
+          puts '${LOGTIME} Error: Provider fix failed,ã€' + e.message + 'ã€‘';
        ensure
           File.open('$CONFIG_FILE','w') {|f| YAML.dump(Value, f)} if Value.is_a?(Hash);
        end" 2>/dev/null >> $LOG_FILE
