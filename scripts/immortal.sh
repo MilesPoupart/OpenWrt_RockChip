@@ -78,6 +78,9 @@ git clone --depth=1 https://github.com/sbwml/packages_utils_docker.git feeds/pac
 git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd.git feeds/packages/utils/dockerd
 git clone --depth=1 https://github.com/sbwml/packages_utils_runc.git feeds/packages/utils/runc
 git clone --depth=1 https://github.com/sbwml/packages_utils_containerd.git feeds/packages/utils/containerd
+# 保留 urfave/cli 的 go:embed 资源，Go 默认源码复制规则会遗漏这些非代码文件。
+sed -i 's|^GO_PKG_INSTALL_EXTRA:=|GO_PKG_INSTALL_EXTRA:=vendor/github.com/urfave/cli/v3/autocomplete/ vendor/github.com/urfave/cli-docs/v3/.*[.]gotmpl |' \
+    feeds/packages/utils/containerd/Makefile
 git clone --depth=1 https://github.com/sbwml/luci-app-dockerman.git feeds/luci/applications/luci-app-dockerman
 
 mkdir -p package/community
@@ -155,6 +158,11 @@ github_partial_clone immortalwrt luci master applications/luci-app-ustreamer ../
 
 # Add luci-app-ssr-plus
 git clone --depth=1 https://github.com/fw876/helloworld
+# UPX 是软件包的宿主工具，统一安装和调用 hostpkg 下的版本。
+sed -i 's|$(STAGING_DIR_HOST)/bin/upx|$(STAGING_DIR_HOSTPKG)/bin/upx|g' \
+    helloworld/mihomo/Makefile helloworld/xray-core/Makefile
+sed -i 's|$(STAGING_DIR_HOST)/bin|$(HOST_BUILD_PREFIX)/bin|g' \
+    helloworld/upx/Makefile
 
 # Add luci-app-passwall
 rm -rf ../../customfeeds/luci/applications/luci-app-passwall
